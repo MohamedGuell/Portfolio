@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="../img/chess.png">
+     <script defer src="piece.js" ></script>
+    <script defer src="app.js" ></script>
+    <title>Jeu d'echec</title>
+    
+</head>
+<body>
+    <a href="../../../index.html" class="clique"> Portfolio</a>
+    	
+<input id="refresh" type="button" onclick='window.location.reload(false)' value="Rejouer "/>
+ 
+<div id="gameboard"> 
+    <audio id="pieceDsound" src="./sound&image/piece-drop.wav"></audio>
+    <audio id="pieceTsound" src="./sound&image/capture.mp3"></audio>
+</div>
+<div class="txtBox">
+    <p >C'est au tour des <span id="player"></span>  de jouer.</p>
+    <p id="info-display"></p>
+</div>
+
+   
+
+</body>
+</html>

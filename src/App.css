@@ -1,0 +1,40 @@
+
+#comp {
+  background: linear-gradient(-45deg, #191617, #e1e5e8, #8a8a90);
+  background-size: 400% 400%;
+  animation: gradient 5s ease infinite;
+border-radius: 15%;
+}
+
+
+*{
+  font-family: "Poppins";
+  font-weight: 600;
+  font-style: normal;
+  color: #EEE82C;
+  font-size: small;
+  
+}
+  img:hover  {
+    transition: all 0.5s ;
+    transform: scale(1.2);
+    opacity: 1;
+ }
+
+ 
+
+
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+
+  
+}
