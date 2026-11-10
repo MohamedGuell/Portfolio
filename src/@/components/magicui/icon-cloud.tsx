@@ -33,14 +33,14 @@ export const cloudProps: Omit<ICloud, "children"> = {
     outlineColour: "#0000",
     maxSpeed: 0.04,
     minSpeed: 0.02,
-    // dragControl: false,
   },
 };
 
-export const renderCustomIcon = (icon: SimpleIcon, theme: string) => {
-  const bgHex = theme === "light" ? "#f3f2ef" : "#080510";
-  const fallbackHex = theme === "light" ? "#6e6e73" : "#ffffff";
-  const minContrastRatio = theme === "dark" ? 2 : 1.2;
+export const renderCustomIcon = (icon: SimpleIcon, _theme?: string) => {
+  // Conforme aux ratios de contraste Coolors / WCAG AAA
+  const bgHex = "#0d1527";
+  const fallbackHex = "#ffffff";
+  const minContrastRatio = 2;
 
   return renderSimpleIcon({
     icon,
@@ -75,7 +75,7 @@ export default function IconCloud({ iconSlugs }: DynamicCloudProps) {
     if (!data) return null;
 
     return Object.values(data.simpleIcons).map((icon) =>
-      renderCustomIcon(icon, theme || "light"),
+      renderCustomIcon(icon, "dark"),
     );
   }, [data, theme]);
 
