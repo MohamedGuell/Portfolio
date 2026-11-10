@@ -1,4 +1,5 @@
 import './App.css';
+import { useEffect } from 'react';
 import BlurFade from '../src/@/components/magicui/blur-fade';
 import { Footer } from './components/footer';
 import { COMPETANCE } from './components/comp';
@@ -8,8 +9,20 @@ import { Parcours } from './components/parcours';
 import { Contact } from './components/Contact';
 
 function App() {
+  useEffect(() => {
+    // Désactive la restauration de scroll automatique du navigateur pour toujours démarrer au sommet
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+    // Nettoie l'ancre résiduelle dans l'URL si présente (ex: #comp)
+    if (window.location.hash) {
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
-    <div className='bg-[url("../src/assets/ciel.jpg")] bg-fixed bg-cover bg-[length:auto_1700px] bg-no-repeat'>
+    <div id="top" className='bg-[url("../src/assets/ciel.jpg")] bg-fixed bg-cover bg-[length:auto_1700px] bg-no-repeat'>
       <div className='bg-[url("../src/assets/ciel.jpg")] bg-fixed bg-cover bg-[length:auto_1700px] bg-no-repeat'>
         <BlurFade delay={0.5} inView>
           <NAVBAR />

@@ -1,19 +1,55 @@
 import React from "react";
 
+// Animation de défilement fluide progressive garantie (requestAnimationFrame avec courbe cubic)
+function smoothScrollTo(targetY: number, duration: number = 750) {
+  const startY = window.pageYOffset || document.documentElement.scrollTop;
+  const distance = targetY - startY;
+  if (Math.abs(distance) < 2) return;
+
+  let startTime: number | null = null;
+
+  // Courbe d'accélération et de décélération douce (easeInOutCubic)
+  function easeInOutCubic(t: number): number {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function step(currentTime: number) {
+    if (startTime === null) startTime = currentTime;
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = easeInOutCubic(progress);
+
+    window.scrollTo(0, startY + distance * ease);
+
+    if (elapsed < duration) {
+      requestAnimationFrame(step);
+    }
+  }
+
+  requestAnimationFrame(step);
+}
+
 export function NAVBAR() {
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
-    const elem = document.getElementById(targetId) || (targetId === "comp" ? document.getElementById("competences") : null);
-    if (elem) {
-      const navOffset = 85; // Décalage pour laisser la navbar visible sans chevaucher le contenu
-      const elementPosition = elem.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - navOffset;
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth"
-      });
-      window.history.pushState(null, "", `#${targetId}`);
+    if (targetId === "top" || targetId === "page") {
+      smoothScrollTo(0, 750);
+      return;
+    }
+
+    let elem = document.getElementById(targetId);
+    if (!elem && (targetId === "comp" || targetId === "competences")) {
+      elem = document.getElementById("competences") || document.getElementById("comp");
+    }
+    if (!elem && (targetId === "Sproj" || targetId === "projets")) {
+      elem = document.getElementById("Sproj") || document.getElementById("projets");
+    }
+
+    if (elem) {
+      const navOffset = 80;
+      const elementTop = elem.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop);
+      smoothScrollTo(Math.max(0, elementTop - navOffset), 750);
     }
   };
 
@@ -21,8 +57,8 @@ export function NAVBAR() {
     <nav className="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 shadow-xl sticky top-0 z-50">
       <div className="max-w-screen-xl flex flex-col md:flex-row items-center justify-between mx-auto px-6 py-4">
         <a 
-          href="#page" 
-          onClick={(e) => handleScroll(e, "page")}
+          href="#top" 
+          onClick={(e) => handleScroll(e, "top")}
           className="flex items-center space-x-3 group cursor-pointer"
         >
           <span className="self-center text-2xl font-extrabold tracking-tight text-white group-hover:text-amber-400 transition-colors">
