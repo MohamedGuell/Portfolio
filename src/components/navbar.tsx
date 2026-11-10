@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 // Animation de défilement fluide progressive garantie (requestAnimationFrame avec courbe cubic)
 function smoothScrollTo(targetY: number, duration: number = 750) {
@@ -30,6 +30,39 @@ function smoothScrollTo(targetY: number, duration: number = 750) {
 }
 
 export function NAVBAR() {
+  const [isVisible, setIsVisible] = useState(true);
+  const prevScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScrollEvent = () => {
+      const currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
+
+      // Toujours afficher le header au sommet de la page (< 60px)
+      if (currentScrollY < 60) {
+        setIsVisible(true);
+        prevScrollY.current = currentScrollY;
+        return;
+      }
+
+      const diff = currentScrollY - prevScrollY.current;
+
+      // Seuil de sensibilité pour la réactivité (8px)
+      if (Math.abs(diff) > 8) {
+        if (diff > 0) {
+          // L'utilisateur descend sur le site -> on masque le header pour aérer la vue
+          setIsVisible(false);
+        } else {
+          // L'utilisateur commence à remonter sur le site -> le header réapparaît immédiatement !
+          setIsVisible(true);
+        }
+        prevScrollY.current = currentScrollY;
+      }
+    };
+
+    window.addEventListener("scroll", handleScrollEvent, { passive: true });
+    return () => window.removeEventListener("scroll", handleScrollEvent);
+  }, []);
+
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
 
@@ -54,7 +87,11 @@ export function NAVBAR() {
   };
 
   return (
-    <nav className="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 shadow-xl sticky top-0 z-50">
+    <nav
+      className={`sticky top-0 z-50 w-full bg-slate-900/85 backdrop-blur-md border-b border-slate-800 shadow-xl transition-transform duration-300 ease-in-out ${
+        isVisible ? "translate-y-0" : "-translate-y-full"
+      }`}
+    >
       <div className="max-w-screen-xl flex flex-col md:flex-row items-center justify-between mx-auto px-6 py-4">
         <a 
           href="#top" 

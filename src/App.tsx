@@ -24,9 +24,7 @@ function App() {
   return (
     <div id="top" className='bg-[url("../src/assets/ciel.jpg")] bg-fixed bg-cover bg-[length:auto_1700px] bg-no-repeat'>
       <div className='bg-[url("../src/assets/ciel.jpg")] bg-fixed bg-cover bg-[length:auto_1700px] bg-no-repeat'>
-        <BlurFade delay={0.5} inView>
-          <NAVBAR />
-        </BlurFade>
+        <NAVBAR />
 
         <div id="page" className='min-h-full'>
           <BlurFade delay={0.8} inView>

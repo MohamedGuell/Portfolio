@@ -1,3 +1,4 @@
+import React from 'react';
 import Tilt from 'react-parallax-tilt';
 import madeiraImg from '../assets/madeira.jpg';
 import chessImg from '../assets/chessImg.png';
@@ -15,6 +16,8 @@ interface ProjectItem {
   githubUrl?: string;
 }
 
+const baseUrl = import.meta.env.BASE_URL || '/Portfolio/';
+
 const projects: ProjectItem[] = [
   {
     title: "Madeira — Carnet de Voyage & Guide Interactif",
@@ -23,7 +26,7 @@ const projects: ProjectItem[] = [
     description: "Plateforme immersive pour explorer l'île de Madère : cartographie dynamique Mapbox GL, repères géographiques des randonnées, filtres d'itinéraires et synchronisation temps réel avec Firebase.",
     tech: ["Mapbox GL", "Firebase", "JavaScript ES6", "CSS3 / Animations"],
     image: madeiraImg,
-    demoUrl: "madeira/index.html",
+    demoUrl: `${baseUrl}madeira/index.html`,
     githubUrl: "https://github.com/MohamedGuell/madeira-trip"
   },
   {
@@ -33,7 +36,7 @@ const projects: ProjectItem[] = [
     description: "Application interactive d'échecs développée en JavaScript Vanilla. Gestion complète des règles officielles, déplacements des pièces, détection des échecs, historique et effets sonores personnalisés.",
     tech: ["JavaScript", "HTML5 Canvas", "Audio API", "Algorithmique"],
     image: chessImg,
-    demoUrl: "chess/chess.html",
+    demoUrl: `${baseUrl}chess/chess.html`,
     githubUrl: "https://github.com/MohamedGuell/Portfolio"
   },
   {
@@ -52,7 +55,7 @@ const projects: ProjectItem[] = [
     description: "Vitrine web épurée et responsive pour une marque de bien-être et micronutrition. Travail approfondi sur la mise en page, l'ergonomie mobile et les micro-interactions visuelles.",
     tech: ["HTML5", "CSS3 Flexbox/Grid", "Responsive UI", "UI/UX"],
     image: bepsImg,
-    demoUrl: "beps/beps.html",
+    demoUrl: `${baseUrl}beps/beps.html`,
     githubUrl: "https://github.com/MohamedGuell/Portfolio"
   }
 ];
@@ -73,82 +76,116 @@ export function Projets() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-        {projects.map((proj, idx) => (
-          <Tilt
-            key={idx}
-            tiltMaxAngleX={8}
-            tiltMaxAngleY={8}
-            perspective={1000}
-            scale={1.02}
-            transitionSpeed={1500}
-            className="h-full"
-          >
-            <div className="h-full flex flex-col bg-slate-900/90 backdrop-blur-md rounded-2xl overflow-hidden border border-slate-800 shadow-2xl hover:border-amber-400/50 transition-all duration-300 group">
-              {/* Image banner */}
-              <div className="relative h-48 w-full overflow-hidden bg-slate-950">
-                <img
-                  src={proj.image}
-                  alt={proj.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
-                <span className={`absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-md border ${proj.badgeColor} backdrop-blur-md`}>
-                  {proj.category}
-                </span>
-              </div>
+        {projects.map((proj, idx) => {
+          const primaryUrl = proj.demoUrl || proj.githubUrl;
 
-              {/* Content */}
-              <div className="p-6 flex flex-col flex-grow justify-between gap-4">
-                <div>
-                  <h3 className="text-xl font-bold text-white group-hover:text-amber-400 transition-colors">
-                    {proj.title}
-                  </h3>
-                  <p className="text-slate-300 text-sm mt-2 leading-relaxed">
-                    {proj.description}
-                  </p>
+          const handleCardClick = (e: React.MouseEvent) => {
+            // Si le clic provient d'un bouton d'action intérieur, laisser le lien s'exécuter
+            if ((e.target as HTMLElement).closest('a')) {
+              return;
+            }
+            if (primaryUrl) {
+              window.open(primaryUrl, '_blank', 'noopener,noreferrer');
+            }
+          };
+
+          return (
+            <Tilt
+              key={idx}
+              tiltMaxAngleX={8}
+              tiltMaxAngleY={8}
+              perspective={1000}
+              scale={1.02}
+              transitionSpeed={1500}
+              className="h-full"
+            >
+              <div
+                onClick={handleCardClick}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    if (primaryUrl) window.open(primaryUrl, '_blank', 'noopener,noreferrer');
+                  }
+                }}
+                className="h-full flex flex-col bg-slate-900/90 backdrop-blur-md rounded-2xl overflow-hidden border border-slate-800 shadow-2xl hover:border-amber-400/60 transition-all duration-300 group cursor-pointer select-none"
+              >
+                {/* Image banner */}
+                <div className="relative h-48 w-full overflow-hidden bg-slate-950">
+                  <img
+                    src={proj.image}
+                    alt={proj.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
+                  <span className={`absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-md border ${proj.badgeColor} backdrop-blur-md`}>
+                    {proj.category}
+                  </span>
+                  {/* Indication visuelle d'ouverture */}
+                  <span className="absolute top-3 right-3 text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-900/80 border border-white/10 text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 backdrop-blur-md">
+                    Ouvrir ↗
+                  </span>
                 </div>
 
-                {/* Tech chips */}
-                <div>
-                  <div className="flex flex-wrap gap-1.5 mb-5">
-                    {proj.tech.map((t, i) => (
-                      <span
-                        key={i}
-                        className="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700/60"
-                      >
-                        {t}
-                      </span>
-                    ))}
+                {/* Content */}
+                <div className="p-6 flex flex-col flex-grow justify-between gap-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-white group-hover:text-amber-400 transition-colors flex items-center justify-between">
+                      <span>{proj.title}</span>
+                      <span className="text-amber-400 text-sm opacity-0 group-hover:opacity-100 transition-opacity ml-2">↗</span>
+                    </h3>
+                    <p className="text-slate-300 text-sm mt-2 leading-relaxed">
+                      {proj.description}
+                    </p>
                   </div>
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-3 pt-3 border-t border-slate-800/80">
-                    {proj.demoUrl && (
-                      <a
-                        href={proj.demoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 text-center py-2 px-3 text-xs font-bold rounded-lg bg-amber-400 text-slate-950 hover:bg-amber-300 transition-colors shadow-md"
-                      >
-                        Explorer en direct ↗
-                      </a>
-                    )}
-                    {proj.githubUrl && (
-                      <a
-                        href={proj.githubUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="py-2 px-3 text-xs font-bold rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 transition-colors border border-slate-700"
-                      >
-                        GitHub
-                      </a>
-                    )}
+                  {/* Tech chips */}
+                  <div>
+                    <div className="flex flex-wrap gap-1.5 mb-5">
+                      {proj.tech.map((t, i) => (
+                        <span
+                          key={i}
+                          className="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700/60"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-3 pt-3 border-t border-slate-800/80">
+                      {proj.demoUrl && (
+                        <a
+                          href={proj.demoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex-1 text-center py-2 px-3 text-xs font-bold rounded-lg bg-amber-400 text-slate-950 hover:bg-amber-300 transition-colors shadow-md"
+                        >
+                          Explorer en direct ↗
+                        </a>
+                      )}
+                      {proj.githubUrl && (
+                        <a
+                          href={proj.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className={`py-2 px-3 text-xs font-bold rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 transition-colors border border-slate-700 ${
+                            !proj.demoUrl ? "flex-1 text-center" : ""
+                          }`}
+                        >
+                          GitHub
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </Tilt>
-        ))}
+            </Tilt>
+          );
+        })}
       </div>
     </section>
   );
