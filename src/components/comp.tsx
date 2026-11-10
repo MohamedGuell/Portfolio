@@ -15,50 +15,75 @@ const slugs = [
   "swift",
   "visualstudiocode",
   "figma",
-  "cplusplus"
+  "cplusplus",
+  "c",
+  "python",
+  "wireshark",
+  "cisco",
+  "arduino",
+  "raspberrypi",
+  "gnubash"
 ];
 
 export function COMPETANCE() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-16">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center bg-slate-900/85 backdrop-blur-md border border-slate-800 rounded-3xl p-8 lg:p-12 shadow-2xl">
-        {/* À propos */}
-        <div className="flex flex-col gap-4 text-slate-200">
-          <div className="inline-block w-fit px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-400/20 text-amber-400 border border-amber-400/30">
-            Profil &amp; Philosophie
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-3xl p-8 lg:p-12 shadow-2xl">
+        {/* À propos de moi */}
+        <div className="flex flex-col justify-between gap-5 text-slate-200">
+          <div className="flex flex-col gap-3">
+            <div className="inline-block w-fit px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-400/20 text-amber-400 border border-amber-400/30">
+              Profil &amp; Philosophie
+            </div>
+            <h2 className="text-3xl font-extrabold text-white tracking-tight">
+              À propos de moi
+            </h2>
+            <p className="text-sm md:text-base text-slate-300 leading-relaxed">
+              Technicien Support IT et Électronique de 25 ans, j’allie un socle technique solide en matériel (diagnostic de circuits, soudure, métrologie) à une expérience opérationnelle en support client applicatif chez <strong className="text-white font-bold">Meta</strong> sur Meta Ads Manager.
+            </p>
+            <p className="text-sm md:text-base text-slate-300 leading-relaxed">
+              Passionné par les technologies et les systèmes communicants, j’aborde chaque incident avec méthode, curiosité et un sens aigu de la relation utilisateur. Prêt et motivé pour de nouveaux défis techniques au Canada.
+            </p>
           </div>
-          <h2 className="text-3xl font-extrabold text-white tracking-tight">
-            À propos de moi
-          </h2>
-          <p className="text-base text-slate-300 leading-relaxed">
-            Technicien Support IT et Électronique de 25 ans, j’allie un socle technique solide en matériel (diagnostic de circuits, soudure, métrologie) à une expérience opérationnelle en support client applicatif chez <strong className="text-white">Meta</strong> sur Meta Ads Manager.
-          </p>
-          <p className="text-base text-slate-300 leading-relaxed">
-            Passionné par les technologies et les systèmes communicants, j’aborde chaque incident avec méthode, curiosité et un sens aigu de la relation utilisateur. Prêt et motivé pour de nouveaux défis techniques au Canada.
-          </p>
 
-          <div className="grid grid-cols-2 gap-4 mt-2 pt-4 border-t border-slate-800">
+          <div className="grid grid-cols-3 gap-3 pt-4 border-t border-slate-800/80">
             <div>
-              <span className="block text-2xl font-black text-amber-400">N1 / N2</span>
-              <span className="text-xs text-slate-400 font-medium">Support &amp; Troubleshooting</span>
+              <span className="block text-xl md:text-2xl font-black text-amber-400">N1 / N2</span>
+              <span className="text-[11px] text-slate-400 font-medium">Support &amp; Diagnostic</span>
             </div>
             <div>
-              <span className="block text-2xl font-black text-amber-400">Hardware &amp; Web</span>
-              <span className="text-xs text-slate-400 font-medium">Double compétence rare</span>
+              <span className="block text-xl md:text-2xl font-black text-amber-400">Hardware</span>
+              <span className="text-[11px] text-slate-400 font-medium">Électronique &amp; Réseaux</span>
+            </div>
+            <div>
+              <span className="block text-xl md:text-2xl font-black text-amber-400">Applicatif</span>
+              <span className="text-[11px] text-slate-400 font-medium">Meta Ads &amp; Web</span>
             </div>
           </div>
         </div>
 
-        {/* Nuage de compétences */}
-        <div id="comp" className="flex flex-col items-center text-center">
-          <h3 className="text-xl font-bold text-white mb-2">
-            Écosystème &amp; Outils
-          </h3>
-          <p className="text-xs text-slate-400 mb-4">
-            Langages, environnements de diagnostic, développement et systèmes
-          </p>
-          <div className="w-full max-w-[22rem] flex items-center justify-center p-6 bg-slate-950/60 rounded-2xl border border-slate-800 shadow-inner">
+        {/* Écosystème & Outils */}
+        <div className="flex flex-col items-center justify-between text-center bg-slate-950/70 border border-slate-800/80 rounded-2xl p-6 shadow-inner">
+          <div className="mb-2">
+            <div className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-slate-800 text-slate-300 border border-slate-700/60 mb-2">
+              Stack &amp; Environnements
+            </div>
+            <h3 className="text-2xl font-extrabold text-white">
+              Écosystème &amp; Outils
+            </h3>
+            <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
+              Systèmes d'exploitation, environnements de diagnostic, langages et outillage réseau
+            </p>
+          </div>
+
+          <div className="w-full flex items-center justify-center py-2">
             <IconCloud iconSlugs={slugs} />
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-1.5 pt-3 border-t border-slate-800/60 w-full text-[11px] text-slate-400">
+            <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800">Windows / Linux / macOS</span>
+            <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800">Cisco &amp; Réseaux IP</span>
+            <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800">Meta Ads Manager</span>
           </div>
         </div>
       </div>

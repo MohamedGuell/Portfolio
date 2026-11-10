@@ -2,6 +2,7 @@ import Tilt from 'react-parallax-tilt';
 import madeiraImg from '../assets/madeira.jpg';
 import chessImg from '../assets/chessImg.png';
 import bepsImg from '../assets/beps.png';
+import iterImg from '../assets/iter.svg';
 
 interface ProjectItem {
   title: string;
@@ -41,7 +42,7 @@ const projects: ProjectItem[] = [
     badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40",
     description: "Conception et programmation d'un robot autonome capable de détecter des briques colorées et de les déposer dans la zone dédiée. Pilotage de puissance par double pont en H (L298) et capteurs IR.",
     tech: ["BTS SN", "Capteurs Infrarouge", "Pont en H L298", "Automatisme"],
-    image: bepsImg,
+    image: iterImg,
     githubUrl: "https://github.com/MohamedGuell/Portfolio"
   },
   {
