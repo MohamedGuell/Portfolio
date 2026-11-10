@@ -1,0 +1,186 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
+*{
+    margin-left: auto;
+    margin-right: auto;
+}
+body {
+ background-color: antiquewhite;
+}
+
+
+#gameboard{
+    width: 640px;
+    height: 640px;
+    display: flex;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    flex-wrap: wrap;
+    animation: board-show 1000ms;
+}
+#refresh{
+    margin-top: 20px;
+    margin-bottom: -20px;
+    display: flex;
+   
+    display: flex;
+    padding-top: 5px;
+    border-radius: 25%;
+    border: none;
+    flex-wrap: wrap;
+    animation: board-show 1000ms;
+    font-family: 'poppins', sans-serif;
+    color: black;
+    text-decoration: none;
+    font-size:xx-large;
+}
+
+#refresh:hover{
+    background-color: red;
+    transform: scale(1.1);
+    transition: all 0.5s;
+}
+.square{
+    height: 80px;
+    width: 80px;
+    position: relative;
+    animation: board-show 1500ms;
+    
+}
+
+
+.square svg {
+    
+    height: 70px;
+    width: 70px;
+    margin: 5px;
+    position: relative;
+    z-index: -9;
+}
+
+path {
+    position: relative;
+    z-index: -10;
+}
+.piece {
+    position: relative;
+    z-index: 9;
+}
+
+
+.beige { 
+    background-color: rgb(218, 218, 210);
+}
+
+.brown {
+    background-color:rgba(50, 121, 150, 0.637);
+}
+
+.black {
+    
+    fill: rgb(48, 26, 26);
+    
+}
+
+.white {
+    fill: beige;
+    
+}
+
+p, a {
+    font-family: 'poppins', sans-serif;
+    color: black;
+    text-decoration: none;
+    font-size:xx-large;
+    
+}
+
+a {
+    transition: all 0.3s;
+    
+  }
+  
+a:hover {
+    background-color:blanchedalmond;
+    transform: scale(1.1);
+    
+  }
+
+  .clique {       /*  bouton LIENS */
+    display: flex;
+    background-color: #e5e9e2; /* Couleur de fond des boutons Liens */
+    padding: 15px 30px; /* Augmente la taille des  Liens */
+    border: none;
+    cursor: pointer;
+    border-radius: 25px; /*  arrondis les bouton */
+   
+   
+    width: fit-content;
+    height: 50px;
+    box-shadow: -1px 3px 3px  #0594e7;
+      animation: txt-show 1s;
+}
+
+
+
+.txtBox {
+    
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    border-radius: 20px;
+    height: auto;
+    max-width: fit-content;
+    padding: 2% ;
+    display: flex ;
+    align-items: center;
+    background-color: blanchedalmond;
+    animation: txt-show 1s;
+    
+}
+
+@keyframes board-show {
+    from {
+      filter: blur(100%) ;
+      opacity: 0;
+    }
+    to {
+      filter: blur(0%) ;
+      opacity: 1;
+    }
+  }
+
+  @keyframes txt-show {
+    from {
+        filter:  blur(100%);
+        opacity: 0;
+    }
+    to {
+        
+        filter: blur(0%) ;
+        opacity: 1;
+    }
+  }
+
+@media(max-width:650px){
+    .txtBox p {
+        font-size: 20px;
+        height: fit-content;
+        
+    }
+    .clique {
+        font-size: 20px;
+       height: fit-content;
+    }
+    .square{
+        height: 40px;
+        width: 40px;
+    }
+    #gameboard{
+        width: 320px;
+        height: 320px;
+    }
+    .square svg {
+    
+        height: 35px;
+        width: 35px;
+        margin: 3.5px;
+    }
+}

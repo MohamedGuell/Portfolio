@@ -1,0 +1,435 @@
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
+
+
+
+*{
+    font-weight: 600;
+}
+
+
+.C{
+    font-size: large;
+    display: flex;
+    align-items: center;
+    background-color: #B3D78F;
+    padding: 22px 30px;
+    border: none;
+    border-radius: 25px;
+    margin-right: 10px;
+    width: 262.974px;
+    box-shadow: -1px 3px 3px #548C1B;
+    transition: background-color 0.3s, transform 0.3s; 
+}
+
+.sousC{
+    display: none;
+    margin-top: 7px;
+    margin-bottom: 7px;
+    background-color: #B3D78F;
+}
+
+.defil:hover .sousC {
+    display: block;
+    align-items: center;
+    padding: 22px 30px;
+    border: none;
+    border-radius: 25px;
+    margin-right: 10px;
+    width: 262.974px;
+    box-shadow: -1px 3px 3px #548C1B;
+    transition: background-color 0.3s, transform 0.3s;
+    
+    
+    }
+
+.defil{
+    display: flex;
+    flex-direction: column;
+    
+    /* transition: opacity 1s ease; */
+}
+
+.sousML {
+    display: none;
+    margin-top: 7px;
+    margin-bottom: 7px;
+    background-color: #B3D78F;
+    
+
+}
+.ML{
+    font-family: 'poppins', sans-serif;
+    font-size: large;
+    font-weight:550;
+    display: flex;
+    align-items: center;
+    background-color: #B3D78F;
+    padding: 22px 30px;
+    border: none;
+    border-radius: 25px;
+    margin-right: 10px;
+    width: 262.974px;
+    box-shadow: -1px 3px 3px #548C1B;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.defil:hover .sousML {
+display: block;
+align-items: center;
+padding: 22px 30px;
+border: none;
+border-radius: 25px;
+margin-right: 10px;
+width: 262.974px;
+box-shadow: -1px 3px 3px #548C1B;
+
+
+}
+.defil button:hover{
+    background-color: #FFF4DD;
+    transform: scale(1.1);
+}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
+body{
+    display: flex;
+    background-color: #FFF7F0;
+    flex-direction: column;
+    align-items: stretch;
+    min-height: 100vh;
+    margin: 0;
+}
+a{
+    font-family: 'poppins', sans-serif;
+    color: black;
+    text-decoration: none;
+}
+
+.Header a {
+    transition: all 0.3s;
+  }
+  
+.Header a:hover {
+    background-color: #FFF4DD;
+    transform: scale(1.1);
+    
+  }
+
+
+.Header {
+    background-color: #B3D78F;
+    color: black;
+    border: 26px solid #B3D78F;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    font-family: 'poppins', sans-serif;
+    max-height: 100px;
+    z-index: 10;
+    transition: 0.5s ease-in-out;   
+
+    
+}   
+
+.Logo {
+    height: 100px;
+}
+
+.maladies {
+    display: flex;
+}
+
+.liens {
+    display: flex;
+}
+
+.maladies img { /* on modifie que les image dans la classe maladie  */
+    margin-right: 10px; /* Espace minimal entre l'image et les boutons */
+}
+
+.maladies .clique  {  /*  /* on modifie que les bouton dans la classe maladie  */
+    background-color: #B3D78F; /* Couleur de fond des boutons "Liens" */
+    display: flex;
+    align-items: center; /* Aligner le texte et l'icône au centre */
+    padding: 15px 30px; /* Augmenter la taille des boutons "Diabète" et "Anémie" */
+    border: none;
+    cursor: pointer;
+    border-radius: 25px; /* Arrondir les boutons */
+    margin-right: 10px; /* Espace entre Diabète et Anémie */
+    width: 182.974px;
+    height: 52.774px;
+    box-shadow: -1px 3px 3px  #548C1B;
+}
+
+.liens .clique {       /*  bouton LIENS */
+    display: flex;
+    align-items: center; /* Aligner le texte et l'icône au centre */
+    background-color: #B3D78F; /* Couleur de fond des boutons Liens */
+    padding: 15px 30px; /* Augmente la taille des  Liens */
+    border: none;
+    cursor: pointer;
+    border-radius: 25px; /*  arrondis les bouton */
+    margin-right: 10px; /* Espace entre les Liens */
+    width: 192.974px;
+    height: 52.774px;
+    box-shadow: -1px 3px 3px  #548C1B;
+}
+
+
+
+.footer {
+    display: flex;
+    justify-content: space-evenly;
+    background-color: #B3D78F;
+    width: 100%;
+    margin-top: auto;
+    align-self: flex-end;
+}
+
+
+
+.icon-link {
+    margin-right: 150px; /* Espace entre les icônes  */
+    margin-top: 30px; 
+    width: 0.5px;
+}
+
+
+
+.imageshead {
+    width: 39px;
+    height: 39px;
+}
+
+/* Pages Recette */
+.titrerecette {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Libre Baskerville', serif;
+    padding-left: 30px;
+    letter-spacing: 1.8px;
+}
+
+
+.imagerecette, .star {
+    width: 40px;
+    height: 40px;
+}
+
+.inforecette button {
+    background-color: #FFF4DD; /* Couleur de fond des boutons "Liens" */
+    padding: 15px 30px; /* Augmenter la taille des boutons "Liens" */
+    border: none;
+    border-radius: 10px; /* Rendre les boutons "Liens" plus arrondis */
+    margin-right: 20px; /* Espace entre les boutons "Liens" */
+    display: inline-flex;
+    align-items:center; /* Aligner le texte et l'icône au centre */
+    justify-content: space-around;
+    width: 192.974px;
+    height: 52.774px;
+    box-shadow: -1px 3px 3px  #c08858
+}
+
+.inforecette {
+    padding-right: 30px;
+}
+
+.recette {
+    background-color: #FFF4DD;
+    padding: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.blocingredient {
+    display: flex;
+    background-color: #F5C498;
+    border-radius: 20px;
+    justify-content: center;
+    justify-content: space-evenly;
+    padding: 20px
+}
+
+h2 {
+    display: flex;
+    justify-content: center;
+    letter-spacing: 1.8px;
+}
+
+.blocrecette {
+    background-color: #F5C498;
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.quantite{
+    font-weight: bold;
+}
+
+.photorecette{
+    margin-left: 3%;
+}
+
+
+.etoile, .comment {
+    cursor: pointer;
+    background-color: #FFF4DD; /* Couleur de fond des boutons "Liens" */
+    padding: 15px 30px; /* Augmenter la taille des boutons "Liens" */
+    border: none;
+    border-radius: 10px; /* Rendre les boutons "Liens" plus arrondis */
+    margin-right: 20px; /* Espace entre les boutons "Liens" */
+    display: inline-flex;
+    align-items:center; /* Aligner le texte et l'icône au centre */
+    justify-content: space-around;
+    width: 250px;
+    height: 52.774px;
+    box-shadow: -1px 3px 3px  #c08858
+}
+
+.like{
+    cursor: pointer;
+    background-color: #FFF4DD; /* Couleur de fond des boutons "Liens" */
+    padding: 15px 30px; /* Augmenter la taille des boutons "Liens" */
+    border: none;
+    border-radius: 10px; /* Rendre les boutons "Liens" plus arrondis */
+    margin-right: 20px; /* Espace entre les boutons "Liens" */
+    display: inline-flex;
+    align-items:center; /* Aligner le texte et l'icône au centre */
+    justify-content: space-around;
+    width: 100px;
+    height: 52.774px;
+    box-shadow: -1px 3px 3px  #c08858
+}
+
+.basrecette {
+    display: flex;
+    justify-content: end;
+    margin: 10px;
+}
+
+
+
+.phoneMenu {
+    display: none;
+}
+.Hmenu{
+    display: none;
+}
+
+
+@media(max-width:1800px){
+    .Header {
+        border: 10px ;
+        text-size-adjust: 2;
+    }
+    }
+    
+    @media(max-width:1730px){
+        .Header  {
+            background: none;
+            
+          .clique {
+            display: none;
+          }
+          button {
+            display: none;
+          }
+          
+          
+        }
+        .lCen {
+            position: fixed;
+            display: flex;
+            justify-content: center;
+            }
+    
+          .footer{
+            width: 100%;
+            a {
+                width: 90%;
+              }
+          }
+          
+        .phoneMenu {
+           
+            height: 20vh;
+            width: 200px;
+            max-width: 300px;
+            position: fixed;
+            top: 0;
+            right: -450px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-style: 3rem;
+            transition: 0.3s ease;
+    
+            ul, li {
+                list-style-type: none;
+                font-size: small;
+                display: block;
+                justify-content: center;
+            }
+        }
+
+        .phoneMenu.active {
+            margin-top: 5px;
+            width: 50%;
+            
+            right: 0px;
+            border-top-left-radius: 0.5rem;
+            border-bottom-left-radius: 0.5rem;
+            a {
+                display: flex;
+                padding: 5px;
+                justify-content: center;
+                
+            }
+            
+          }
+         
+    
+          .Hmenu {
+            
+            display: block;
+            text-decoration: none;
+            img{
+                height: 60px;
+                width: 55px;
+                border-radius: 5px;
+                position: absolute;
+                top: 10px;
+                left: 95.5%;
+            }
+           
+          }
+         .bg-b{
+            filter: blur(5px);
+         }
+        }
+
+        @media (max-width:1400px) {
+            .titrerecette,.recette {
+                display: block;
+               margin-top: 10px;
+                margin-bottom: 10px;
+               
+                
+            }
+            .photorecette{
+                position: relative;
+                border-radius: 50px;
+                width: 100%;
+                margin: 0;
+                padding: 5px;
+                max-height: 280px;
+            }
+        }
+            
+        @media(max-width:1200px){
+            .footer {
+               display: none;
+              }
+            }
