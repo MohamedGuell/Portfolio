@@ -27,7 +27,7 @@ const slugs = [
 
 export function COMPETANCE() {
   return (
-    <div className="max-w-5xl mx-auto px-4 py-16">
+    <div id="competences" className="max-w-5xl mx-auto px-4 py-16 scroll-mt-24">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch bg-slate-900/85 backdrop-blur-md border border-slate-800 rounded-3xl p-8 lg:p-12 shadow-[rgba(50,50,93,0.25)_0px_50px_100px_-20px,rgba(0,0,0,0.3)_0px_30px_60px_-30px,rgba(10,37,64,0.35)_0px_-2px_6px_0px_inset]">
         {/* À propos de moi */}
         <div className="flex flex-col justify-between gap-5 text-slate-200">

@@ -1,6 +1,6 @@
 export function Parcours() {
   return (
-    <div className="max-w-5xl mx-auto px-4 py-16">
+    <div id="parcours" className="max-w-5xl mx-auto px-4 py-16 scroll-mt-24">
       <div className="bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-3xl p-8 lg:p-12 shadow-2xl">
         {/* Header */}
         <div className="text-center mb-12">

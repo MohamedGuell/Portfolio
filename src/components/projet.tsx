@@ -59,7 +59,7 @@ const projects: ProjectItem[] = [
 
 export function Projets() {
   return (
-    <section id="Sproj" className="py-20 px-4 max-w-7xl mx-auto">
+    <section id="Sproj" className="py-20 px-4 max-w-7xl mx-auto scroll-mt-24">
       <div className="text-center mb-16">
         <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-400/20 text-amber-400 border border-amber-400/30">
           Portfolio &amp; Réalisations
