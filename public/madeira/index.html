@@ -1,0 +1,2862 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Madeira — 9-16 Oct · Carnet de Voyage & Souvenirs 🏝️</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#faf8f5;--text:#2d2a26;--text-soft:#6b6560;
+  --card:#fff;--shadow:0 4px 20px rgba(0,0,0,.06);--shadow-hover:0 8px 32px rgba(0,0,0,.1);
+  --radius:16px;--radius-sm:10px;
+  --east:#e8d5c4;--north:#c8ddd0;--funchal:#d5d0e8;
+  --accent:#2a6f97;--green:#3a8558;--orange:#e8913a;--red:#d94f4f;
+  --font:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+.container{max-width:540px;margin:0 auto;padding:0 14px}
+
+/* ── Animations ── */
+@keyframes gradient-bg {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+.reveal {
+  opacity: 0;
+  transform: translateY(30px) scale(0.98);
+  transition: all 0.6s var(--ease);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* ── Hero ── */
+.hero{position:relative;overflow:hidden;background:linear-gradient(-45deg,#1b4965,#468faf,#62b6cb,#bee9e8,#2a6f97);background-size:400% 400%;animation:gradient-bg 15s ease infinite;padding:44px 0 0;text-align:center}
+.hero::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:44px;background:var(--bg);border-radius:30px 30px 0 0}
+.hero h1{font-size:2.5rem;font-weight:800;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.25);display:inline-block;animation:float 4s ease-in-out infinite}
+.hero p{font-size:.95rem;color:rgba(255,255,255,.9);margin-top:2px;font-weight:600}
+.hero .dates-badge{display:inline-block;margin-top:10px;padding:6px 18px;background:rgba(255,255,255,.2);border-radius:999px;font-size:.82rem;font-weight:600;color:#fff;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2)}
+.sync-badge{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:4px 14px;background:rgba(0,0,0,.2);border-radius:999px;font-size:.7rem;font-weight:600;color:#fff;backdrop-filter:blur(6px);margin-bottom:50px;transition:all .3s}
+.sync-dot{width:8px;height:8px;border-radius:50%;transition:background .3s}
+.sync-dot.on{background:#4caf50;box-shadow:0 0 8px #4caf50}.sync-dot.off{background:#f44336}
+
+/* ── Nav ── */
+.nav{position:sticky;top:0;z-index:100;background:rgba(250,248,245,.8);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,.05);padding:8px 0;transition:all 0.3s}
+.nav .container{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.nav .container::-webkit-scrollbar{display:none}
+.pill{flex-shrink:0;padding:7px 13px;border-radius:999px;font-size:.72rem;font-weight:600;cursor:pointer;border:none;background:rgba(0,0,0,0.05);color:var(--text-soft);transition:all .2s var(--ease);white-space:nowrap}
+.pill:hover,.pill.active{color:#fff;transform:scale(1.05)}
+.pill:active{transform:scale(0.95)!important}
+.pill[data-s="lodging"]{--c:#c97b3a}.pill[data-s="budget"]{--c:#3a8558}.pill[data-s="east"]{--c:#b08968}.pill[data-s="north"]{--c:#52796f}.pill[data-s="funchal"]{--c:#7b6fa6}.pill[data-s="notes"]{--c:#6b8cae}.pill[data-s="prep"]{--c:#e07a5f}.pill[data-s="info"]{--c:#5b8c85}.pill[data-s="album"]{--c:#d4a373}.pill[data-s="map-section"]{--c:#2a6f97}
+.trip-recap-badges { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:14px; }
+.tr-badge { background:rgba(255,255,255,0.2); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.25); padding:6px 14px; border-radius:999px; color:#fff; font-size:0.78rem; font-weight:700; display:inline-flex; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+.pill:hover,.pill.active{background:var(--c);box-shadow:0 3px 12px color-mix(in srgb,var(--c) 35%,transparent)}
+
+/* ── Section ── */
+.section{padding:32px 0 20px}
+.section-east{background:linear-gradient(180deg,var(--east),var(--bg))}
+.section-north{background:linear-gradient(180deg,var(--north),var(--bg))}
+.section-funchal{background:linear-gradient(180deg,var(--funchal),var(--bg))}
+.sec-title{display:inline-flex;align-items:center;gap:7px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--text-soft);margin-bottom:18px;padding:5px 13px;background:rgba(255,255,255,.55);border-radius:999px;backdrop-filter:blur(6px)}
+.sec-title .dot{width:8px;height:8px;border-radius:50%}
+
+/* ── Timeline + Day Card ── */
+.timeline{position:relative;padding-left:34px}
+.timeline::before{content:'';position:absolute;left:11px;top:0;bottom:0;width:2px;background:rgba(0,0,0,.07)}
+.day-card{position:relative;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:18px;transition:box-shadow .3s,transform .3s}
+.day-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-1px)}
+.day-card::before{content:'';position:absolute;left:-28px;top:24px;width:11px;height:11px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 2px rgba(0,0,0,.1)}
+.section-east .day-card::before{background:#b08968}.section-north .day-card::before{background:#52796f}.section-funchal .day-card::before{background:#7b6fa6}
+.day-badge{display:inline-block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:3px 10px;border-radius:999px;margin-bottom:8px}
+.section-east .day-badge{background:#f0dcc8;color:#7a5a3a}.section-north .day-badge{background:#bdd5c8;color:#2f5045}.section-funchal .day-badge{background:#cec8e3;color:#4e4478}
+.day-card h3{font-size:1.05rem;font-weight:700;margin-bottom:6px}
+.act-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+.act-item{display:flex;align-items:center;gap:8px;font-size:.84rem;color:var(--text-soft);line-height:1.4;padding:4px 0}
+.act-item .ico{flex-shrink:0;width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.section-east .ico{background:#f5e6d6}.section-north .ico{background:#d6eade}.section-funchal .ico{background:#e0daf0}
+.act-item.done span:last-child{text-decoration:line-through;opacity:.5}
+.act-check{width:18px;height:18px;border-radius:5px;border:2px solid #ccc;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;transition:all .2s;background:#fff}
+.act-check.checked{background:var(--green);border-color:var(--green);color:#fff}
+
+/* ── Alerts / Tips / Bonus ── */
+.alert,.order-tip,.bonus-card{margin-top:10px;padding:10px 12px;border-radius:var(--radius-sm);font-size:.78rem;line-height:1.45;display:flex;align-items:flex-start;gap:8px}
+.alert{background:#fff4e5;border-left:3px solid #f0a830;color:#7a5a1e}
+.order-tip{background:#eef6ff;border-left:3px solid #5b9bd5;color:#2b5a85}
+.bonus-card{background:linear-gradient(135deg,#f0fdf4,#e8f5e9);border:1px dashed #81c784;color:#2e7d32;flex-direction:column;gap:4px}
+.bonus-card .bh{font-weight:700;font-size:.7rem;text-transform:uppercase;letter-spacing:.7px}
+.bonus-card ul{list-style:none;margin-top:4px}.bonus-card li{padding:2px 0;display:flex;gap:5px;align-items:flex-start}
+
+/* ── PREMIUM UPGRADES: Countdown, Weather, Chart, Hike Badges, Collapsible ── */
+.countdown-widget { display: inline-flex; gap: 10px; margin-top: 15px; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+.cd-box { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 8px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); min-width: 60px; display: flex; flex-direction: column; align-items: center; }
+.cd-box span:first-child { font-size: 1.4rem; font-weight: 800; line-height: 1; }
+.cd-box span:last-child { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; opacity: 0.9; }
+
+.weather-widget { display: inline-flex; align-items: center; gap: 15px; margin-top: 15px; margin-bottom: 25px; padding: 10px 20px; background: rgba(0,0,0,0.2); border-radius: 999px; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); color: #fff; }
+.w-zone { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; }
+.w-zone span:first-child { opacity: 0.8; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+.w-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.2); }
+
+.budget-chart-container { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; background: rgba(0,0,0,0.02); padding: 15px; border-radius: 16px; border: 1px solid rgba(0,0,0,0.05); }
+.b-chart { position: relative; width: 80px; height: 80px; border-radius: 50%; background: conic-gradient(var(--accent) 0%, var(--green) 40%, var(--orange) 75%, #e0e0e0 75%); display: flex; align-items: center; justify-content: center; }
+.b-chart::after { content: ''; position: absolute; width: 66px; height: 66px; background: var(--card); border-radius: 50%; }
+.b-chart-val { position: relative; z-index: 1; font-weight: 800; font-size: 0.9rem; color: var(--text); }
+.b-chart-info { flex: 1; }
+.b-chart-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; color: var(--text); }
+.b-chart-sub { font-size: 0.75rem; color: var(--text-soft); }
+
+.hike-badge { display: flex; align-items: center; gap: 8px; margin-top: 6px; padding: 6px 10px; background: rgba(0,0,0,0.03); border-radius: 8px; font-size: 0.7rem; color: var(--text-soft); font-weight: 600; border: 1px solid rgba(0,0,0,0.05); }
+.hb-diff { padding: 2px 6px; border-radius: 4px; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.65rem; }
+.hb-diff.hard { background: var(--red); }
+.hb-diff.medium { background: var(--orange); }
+.hb-diff.easy { background: var(--green); }
+.hb-chart { height: 16px; width: 50px; fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.collapsible-header { display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 10px 0; font-weight: 700; font-size: 0.95rem; user-select: none; border-bottom: 1px solid rgba(0,0,0,0.05); margin-bottom: 10px; }
+.collapsible-header::after { content: '▼'; font-size: 0.7rem; transition: transform 0.3s; }
+.collapsible-header.open::after { transform: rotate(-180deg); }
+.collapsible-content { display: none; margin-bottom: 15px; }
+.collapsible-content.open { display: block; animation: fadeInDown 0.3s ease; }
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+[data-theme="dark"] .budget-chart-container { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+[data-theme="dark"] .hike-badge { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.05); }
+[data-theme="dark"] .collapsible-header { border-bottom-color: rgba(255,255,255,0.05); }
+[data-theme="dark"] .b-chart { background: conic-gradient(var(--accent) 0%, var(--green) 40%, var(--orange) 75%, #333 75%); }
+
+/* ── Day note ── */
+.day-note{margin-top:10px}
+.day-note textarea{width:100%;border:1px dashed #d0d0d0;border-radius:var(--radius-sm);padding:8px 10px;font-family:var(--font);font-size:.78rem;resize:vertical;min-height:36px;background:#fefefe;color:var(--text);transition:border-color .2s}
+.day-note textarea:focus{outline:none;border-color:var(--accent)}
+.day-note textarea::placeholder{color:#bbb}
+
+/* ═══ LODGING ═══ */
+.lodging-section{padding:28px 0}
+.lodging-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 16px;margin-bottom:18px;overflow:hidden}
+.lodging-card h2{font-size:1rem;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.lodging-card .sub{font-size:.75rem;color:var(--text-soft);margin-bottom:14px}
+.lodge-period{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);padding:8px 0 6px;border-bottom:2px solid var(--accent);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.lodge-opt{border:1px solid rgba(0,0,0,.06);border-radius:var(--radius-sm);padding:12px;margin-bottom:10px;background:#fafafa;transition:all .3s var(--ease)}
+.lodge-opt:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.08);background:#fff}
+.lodge-opt.selected{border-color:var(--green);background:#f0fdf4;box-shadow:0 0 0 2px rgba(58,133,88,.15)}
+.lodge-opt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
+.lodge-opt-name{font-weight:700;font-size:.88rem;display:flex;align-items:center;gap:6px}
+.lodge-opt-name a{color:var(--accent);text-decoration:none;font-weight:700}
+.lodge-opt-name a:hover{text-decoration:underline}
+.lodge-price{text-align:right}
+.lodge-price .total{font-size:.95rem;font-weight:700;color:var(--green);display:flex;align-items:center;gap:3px;justify-content:flex-end}
+.lodge-price .pp{font-size:.7rem;color:var(--text-soft)}
+.lodge-proscons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.lodge-pro,.lodge-con{font-size:.75rem;line-height:1.4;padding:6px 8px;border-radius:6px}
+.lodge-con{background:#fff5f5;color:#c0392b}.lodge-pro{background:#f0fdf4;color:#27ae60}
+.lodge-pro::before{content:'✅ '}.lodge-con::before{content:'⚠️ '}
+.lodge-votes{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.lodge-votes .vote-label{font-size:.68rem;font-weight:600;color:var(--text-soft);margin-right:2px}
+.vote-btn{padding:4px 10px;border-radius:999px;font-size:.7rem;font-weight:600;border:1.5px solid #ddd;cursor:pointer;transition:all .2s;background:#fff}
+.vote-btn:hover{transform:scale(1.05)}.vote-btn:active{transform:scale(0.95)!important}
+.vote-btn.oui{border-color:#66bb6a;color:#2e7d32;background:#e8f5e9}
+.vote-btn.bof{border-color:#ffa726;color:#e65100;background:#fff8e1}
+.vote-btn.non{border-color:#ef5350;color:#c62828;background:#ffebee}
+.vote-btn.active{font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.vote-btn.oui.active{background:#c8e6c9;border-width:2px}.vote-btn.bof.active{background:#ffe0b2;border-width:2px}.vote-btn.non.active{background:#ffcdd2;border-width:2px}
+.select-lodge-btn{display:block;width:100%;padding:8px;border:none;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s;margin-top:8px}
+.select-lodge-btn{background:#e8f5e9;color:#2e7d32}.select-lodge-btn:hover{background:#c8e6c9}.select-lodge-btn:active{transform:scale(0.98)!important}
+.select-lodge-btn.chosen{background:var(--green);color:#fff}
+.book-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:0.75rem;font-weight:700;text-decoration:none;color:#fff;transition:all 0.2s var(--ease);text-transform:uppercase;letter-spacing:0.5px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+.book-btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.15);}
+.book-btn.bb-airbnb{background:#FF5A5F;}
+.book-btn.bb-booking{background:#003580;}
+.book-btn.bb-trip{background:#0f294d;}
+
+/* ═══ EDITABLE PRICE ═══ */
+.price-edit{width:55px;border:none;border-bottom:1.5px dashed #bbb;background:transparent;font-weight:700;font-size:inherit;color:inherit;text-align:right;font-family:inherit;padding:0 2px;transition:border-color .2s}
+.price-edit:focus{outline:none;border-bottom-color:var(--accent);background:rgba(42,111,151,.05);border-radius:3px 3px 0 0}
+.price-edit::-webkit-inner-spin-button{display:none}
+.price-edit[type=number]{-moz-appearance:textfield}
+.price-hint{font-size:.6rem;color:#aaa;margin-left:2px}
+
+/* ═══ BUDGET ═══ */
+.budget-section{padding:28px 0}
+.budget-card{background:linear-gradient(135deg,#f0f7f2,#f8fcf9);border:1px solid rgba(0,0,0,.06);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 16px}
+.budget-card h2{font-size:1rem;font-weight:700;color:#3a7855;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.budget-card .sub{font-size:.75rem;color:var(--text-soft);margin-bottom:16px}
+.budget-strip{display:flex;border-radius:14px;overflow:hidden;margin-bottom:16px;background:#fff;border:1px solid rgba(0,0,0,.05)}
+.bs-block{flex:1;padding:14px 12px;text-align:center;border-right:1px solid rgba(0,0,0,.04)}
+.bs-block:last-child{border-right:none}
+.bs-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-soft);margin-bottom:2px}
+.bs-amt{font-size:1.4rem;font-weight:800;color:#2e7d32}
+.bs-amt.sec{font-size:1rem;color:#558b5e}
+.bs-sub{font-size:.65rem;color:var(--text-soft)}
+.budget-rows{display:flex;flex-direction:column;gap:8px}
+.b-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border-radius:var(--radius-sm);border:1px solid rgba(0,0,0,.04)}
+.b-row .be{font-size:1.1rem;flex-shrink:0;width:28px;text-align:center}
+.b-row .bi{flex:1;min-width:0}.b-row .bn{font-size:.8rem;font-weight:600}.b-row .bd{font-size:.7rem;color:var(--text-soft)}
+.b-row .bp{text-align:right;white-space:nowrap}
+.b-row .bt{font-size:.88rem;font-weight:700;color:#2e7d32;display:flex;align-items:center;gap:2px;justify-content:flex-end}
+.b-row .bpp{font-size:.65rem;color:var(--text-soft)}
+.budget-note{margin-top:14px;font-size:.73rem;color:var(--text-soft);text-align:center;padding:10px;background:rgba(255,255,255,.6);border-radius:var(--radius-sm);line-height:1.5}
+
+/* ═══ PREP CHECKLIST ═══ */
+.prep-section{padding:28px 0}
+.prep-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 16px}
+.prep-card h2{font-size:1rem;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.prep-card .sub{font-size:.75rem;color:var(--text-soft);margin-bottom:14px}
+.prep-list{list-style:none;display:flex;flex-direction:column;gap:4px}
+.prep-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);font-size:.84rem;transition:background .2s;cursor:pointer}
+.prep-item:hover{background:rgba(0,0,0,.02)}
+.prep-item.done{opacity:.5}
+.prep-item.done .prep-text{text-decoration:line-through}
+.prep-check{width:20px;height:20px;border-radius:6px;border:2px solid #ccc;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.75rem;transition:all .2s;background:#fff;cursor:pointer}
+.prep-check.checked{background:var(--green);border-color:var(--green);color:#fff}
+.prep-cat{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);padding:10px 0 4px;margin-top:6px}
+
+/* ═══ INFO ═══ */
+.info-section{padding:28px 0}
+.info-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 16px}
+.info-card h2{font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.info-item{padding:10px;border-radius:var(--radius-sm);background:#f8f8f8;font-size:.78rem;line-height:1.4}
+.info-item .ii-icon{font-size:1.1rem;display:block;margin-bottom:3px}
+.info-item .ii-label{font-weight:700;font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text-soft);display:block}
+.info-item .ii-value{font-weight:600;color:var(--text)}
+.info-meteo{margin-top:12px;padding:14px;background:linear-gradient(135deg,#e3f2fd,#f3e5f5);border-radius:var(--radius-sm);font-size:.8rem;line-height:1.5}
+
+/* ═══ NOTES ═══ */
+.notes-section{padding:28px 0}
+.notes-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 16px;margin-bottom:14px}
+.notes-card h2{font-size:1rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.person-note{margin-bottom:14px}
+.person-note label{display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:700;margin-bottom:6px}
+.person-note label .avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:#fff;font-weight:800}
+.av-v{background:#5b9bd5}.av-m{background:#e07a5f}.av-c{background:#81b29a}
+.person-note textarea{width:100%;border:1px solid #e0e0e0;border-radius:var(--radius-sm);padding:10px;font-family:var(--font);font-size:.8rem;resize:vertical;min-height:60px;transition:border-color .2s;background:#fefefe}
+.person-note textarea:focus{outline:none;border-color:var(--accent)}
+
+/* ═══ TOOLBAR ═══ */
+.toolbar{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-top:1px solid rgba(0,0,0,.06);padding:8px 12px;display:flex;gap:8px;justify-content:center;align-items:center}
+.tb-btn{padding:8px 16px;border-radius:999px;font-size:.75rem;font-weight:600;border:none;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px}
+.tb-btn.reset{background:#eee;color:var(--text-soft)}.tb-btn.reset:hover{background:#ddd}
+.tb-sync{font-size:.7rem;font-weight:600;display:flex;align-items:center;gap:5px;color:var(--text-soft);padding:6px 14px;background:rgba(0,0,0,.03);border-radius:999px}
+.tb-sync .sync-d{width:7px;height:7px;border-radius:50%;transition:background .3s}
+.tb-sync .sync-d.on{background:#4caf50}.tb-sync .sync-d.off{background:#f44336}
+.save-toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(20px);background:#2e7d32;color:#fff;padding:10px 24px;border-radius:999px;font-size:.82rem;font-weight:600;opacity:0;transition:all .3s var(--ease);z-index:300;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.save-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+footer{text-align:center;padding:30px 16px 80px;font-size:.75rem;color:var(--text-soft)}
+footer .heart{color:#e07a5f}
+
+@media(min-width:520px){.container{padding:0 22px}}
+@media(min-width:768px){.container{max-width:600px}}
+/* ── Authentic Scrapbook & Polaroid Photo Album ── */
+.album-book-wrap {
+  background: #fdfbf7;
+  border-radius: 24px;
+  padding: 26px 16px 38px;
+  box-shadow: 0 16px 45px rgba(0,0,0,0.08), inset 0 0 100px rgba(220,205,185,0.22);
+  border: 1px solid rgba(0,0,0,0.07);
+  position: relative;
+  overflow: hidden;
+}
+[data-theme="dark"] .album-book-wrap {
+  background: #181a20;
+  box-shadow: 0 16px 45px rgba(0,0,0,0.45), inset 0 0 100px rgba(0,0,0,0.3);
+  border-color: rgba(255,255,255,0.08);
+}
+
+.album-header-wrap {
+  text-align: center;
+  margin-bottom: 22px;
+  position: relative;
+}
+.album-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 18px;
+  border: 2px dashed #a07855;
+  color: #7d5332;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  transform: rotate(-1.5deg);
+  margin-bottom: 8px;
+  background: rgba(160, 120, 85, 0.08);
+}
+[data-theme="dark"] .album-stamp {
+  border-color: #d4a373;
+  color: #e8c49e;
+  background: rgba(212, 163, 115, 0.12);
+}
+
+.album-title-handwritten {
+  font-family: 'Caveat', cursive;
+  font-size: 2.9rem;
+  font-weight: 700;
+  color: #2b2622;
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+[data-theme="dark"] .album-title-handwritten {
+  color: #f7f3ee;
+}
+.album-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-soft);
+  max-width: 480px;
+  margin: 0 auto 16px;
+  line-height: 1.5;
+}
+
+/* Scrapbook Ribbon / Tabs */
+.album-tabs-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 6px 4px 14px;
+  margin-bottom: 14px;
+  border-bottom: 2px dashed rgba(0,0,0,0.08);
+  -webkit-overflow-scrolling: touch;
+}
+.album-tabs-bar::-webkit-scrollbar { display: none; }
+[data-theme="dark"] .album-tabs-bar {
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+.album-tab {
+  flex-shrink: 0;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: #fff;
+  color: #4a4540;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: all 0.25s var(--ease);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+[data-theme="dark"] .album-tab {
+  background: #242730;
+  border-color: rgba(255,255,255,0.1);
+  color: #ccc;
+}
+.album-tab:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.album-tab.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 4px 14px rgba(42, 111, 151, 0.35);
+  transform: translateY(-2px);
+}
+.album-tab .badge-count {
+  font-size: 0.66rem;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.07);
+}
+.album-tab.active .badge-count {
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+}
+
+.album-controls-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.76rem;
+  color: var(--text-soft);
+  margin-bottom: 20px;
+  padding: 0 6px;
+  font-weight: 600;
+}
+.album-sort-btn {
+  background: none;
+  border: none;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--accent);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.album-sort-btn:hover {
+  background: rgba(42, 111, 151, 0.08);
+}
+
+/* Authentic Polaroid Grid */
+.polaroid-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+  gap: 22px 14px;
+  padding: 10px 4px;
+}
+@media (min-width: 520px) {
+  .polaroid-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 28px 18px;
+  }
+}
+@media (min-width: 768px) {
+  .polaroid-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 32px 22px;
+  }
+}
+
+/* The Polaroid Card */
+.polaroid-card {
+  position: relative;
+  background: #ffffff;
+  padding: 9px 9px 40px 9px;
+  border-radius: 4px;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.11), 0 2px 6px rgba(0,0,0,0.06);
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease, z-index 0.1s;
+  display: flex;
+  flex-direction: column;
+}
+[data-theme="dark"] .polaroid-card {
+  background: #23262d;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Authentic Masking Tape */
+.polaroid-card::before {
+  content: '';
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%) rotate(var(--tape-rot, -1deg));
+  width: 52px;
+  height: 18px;
+  background: rgba(255, 238, 185, 0.65);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  border-left: 2px dashed rgba(200, 165, 105, 0.4);
+  border-right: 2px dashed rgba(200, 165, 105, 0.4);
+  z-index: 5;
+  pointer-events: none;
+}
+[data-theme="dark"] .polaroid-card::before {
+  background: rgba(210, 185, 140, 0.22);
+  border-left-color: rgba(255,255,255,0.15);
+  border-right-color: rgba(255,255,255,0.15);
+}
+
+.polaroid-card:hover {
+  transform: scale(1.08) rotate(0deg) translateY(-8px) !important;
+  box-shadow: 0 20px 45px rgba(0,0,0,0.22), 0 6px 14px rgba(0,0,0,0.12);
+  z-index: 25;
+}
+
+.polaroid-photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #1a1a1a;
+  border-radius: 2px;
+}
+.polaroid-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.45s ease;
+}
+.polaroid-card:hover .polaroid-photo img {
+  transform: scale(1.06);
+}
+
+.polaroid-caption {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  text-align: center;
+  font-family: 'Caveat', cursive;
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: #2b2520;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.3px;
+}
+[data-theme="dark"] .polaroid-caption {
+  color: #ece6df;
+}
+
+.polaroid-date-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 8px;
+  font-size: 0.62rem;
+  font-family: var(--font);
+  color: #8c827a;
+  font-weight: 600;
+  opacity: 0.75;
+}
+[data-theme="dark"] .polaroid-date-badge {
+  color: #8a8e99;
+}
+
+.polaroid-video-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  z-index: 4;
+}
+
+/* Lightbox Styling */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  user-select: none;
+}
+.lightbox.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.lb-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 10, 14, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 1;
+}
+.lb-topbar {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  color: #fff;
+}
+.lb-counter {
+  font-size: 0.82rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 5px 14px;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+}
+.lb-spot-badge {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.lb-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.lb-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.lb-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+.lb-close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+/* Lightbox Stage */
+.lb-stage {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  overflow: hidden;
+}
+.lb-nav {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  z-index: 20;
+}
+.lb-nav:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+.lb-nav:active {
+  transform: scale(0.95);
+}
+.lb-img-wrap {
+  position: relative;
+  max-width: 88vw;
+  max-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lb-img-wrap img {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.65);
+  border: 4px solid rgba(255,255,255,0.9);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+.lb-img-wrap img.fading {
+  opacity: 0.25;
+  transform: scale(0.98);
+}
+.lb-spinner {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  border: 3px solid rgba(255,255,255,0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: none;
+}
+.lb-spinner.show {
+  display: block;
+}
+
+/* Lightbox Bottombar */
+.lb-bottombar {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 16px 22px;
+}
+.lb-info-box {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  padding: 10px 24px;
+  text-align: center;
+  max-width: 520px;
+  width: 90%;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+.lb-title {
+  color: #fff;
+  font-family: 'Caveat', cursive;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.lb-meta {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.lb-sep {
+  opacity: 0.5;
+}
+.lb-keyboard-hint {
+  margin-top: 8px;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.album-load-more-wrap {
+  text-align: center;
+  margin-top: 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.album-more-btn {
+  background: #a07855;
+  color: #fff;
+  border: none;
+  padding: 11px 26px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(160, 120, 85, 0.35);
+  transition: all 0.25s var(--ease);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.album-more-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(160, 120, 85, 0.45);
+}
+.album-show-all-btn {
+  background: none;
+  border: none;
+  color: var(--text-soft);
+  font-size: 0.74rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 4px;
+}
+.album-show-all-btn:hover {
+  color: var(--accent);
+}
+.sleek-tooltip {
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  padding: 8px 12px;
+  font-family: var(--font);
+  backdrop-filter: blur(4px);
+}
+.sleek-tooltip::before { display: none; }
+
+/* MAPBOX CUSTOM CSS */
+.mapboxgl-popup-content {
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  padding: 10px 14px;
+  font-family: var(--font);
+  border: none;
+}
+.map-panel {
+  position: absolute;
+  top: 0;
+  right: -350px;
+  width: 300px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: -4px 0 15px rgba(0,0,0,0.1);
+  transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+  z-index: 10;
+  padding: 20px;
+  border-radius: 18px 0 0 18px;
+  overflow-y: auto;
+}
+.map-panel.active {
+  right: 0;
+}
+.panel-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+}
+.panel-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--accent);
+  margin-bottom: 5px;
+  margin-top: 10px;
+}
+.panel-desc {
+  font-size: 0.9rem;
+  color: var(--text-soft);
+  margin-bottom: 15px;
+}
+.activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.activity-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+}
+.activity-item:last-child {
+  border-bottom: none;
+}
+.act-name { font-weight: 600; color: #333; }
+.act-price { font-weight: 700; color: var(--accent); }
+
+/* CUSTOM CURSOR */
+@media (pointer: fine) {
+  body, a, button, input, textarea, .pill, .photo-item, .act-check, .prep-check, .custom-pin {
+    cursor: none !important;
+  }
+}
+#cursor-dot, #cursor-ring {
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 999999;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+#cursor-dot {
+  width: 8px; height: 8px;
+  background-color: var(--accent);
+  transition: transform 0.15s ease-out;
+}
+#cursor-ring {
+  width: 32px; height: 32px;
+  border: 2px solid var(--accent);
+  transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s;
+}
+#cursor-ring.hover {
+  width: 50px; height: 50px;
+  background-color: rgba(42, 111, 151, 0.1);
+  border-color: rgba(42, 111, 151, 0.4);
+}
+
+/* ═══ DARK MODE ═══ */
+[data-theme="dark"] {
+  --bg: #121212; --text: #e0e0e0; --text-soft: #a0a0a0;
+  --card: #1e1e1e; --shadow: 0 4px 20px rgba(0,0,0,0.4); --shadow-hover: 0 8px 32px rgba(0,0,0,0.6);
+  --east: #2a2018; --north: #1a2a22; --funchal: #1e1b29;
+}
+[data-theme="dark"] .nav { background: rgba(18,18,18,0.85); border-bottom-color: rgba(255,255,255,0.05); }
+[data-theme="dark"] .pill { background: rgba(255,255,255,0.08); color: #ccc; }
+[data-theme="dark"] .hero { background: linear-gradient(-45deg, #0d222e, #1a3f50, #204b57, #2c5150, #133a52); background-size: 400% 400%; }
+[data-theme="dark"] .hero::after { background: var(--bg); }
+[data-theme="dark"] .hero .dates-badge { background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.1); }
+[data-theme="dark"] .sec-title { background: rgba(255,255,255,0.08); color: #ccc; }
+[data-theme="dark"] .timeline::before { background: rgba(255,255,255,0.1); }
+[data-theme="dark"] .day-card::before { border-color: var(--card); }
+[data-theme="dark"] .act-item.done span:last-child { opacity: 0.4; color: #888; }
+[data-theme="dark"] .act-check { background: #333; border-color: #555; }
+[data-theme="dark"] .lodge-opt { background: #242424; border-color: rgba(255,255,255,0.05); }
+[data-theme="dark"] .lodge-opt:hover { background: #2a2a2a; }
+[data-theme="dark"] .vote-btn { background: #2a2a2a; border-color: #444; color: #ccc; }
+[data-theme="dark"] .vote-btn.oui.active { background: #1b3d22; border-color: #2e7d32; }
+[data-theme="dark"] .vote-btn.bof.active { background: #4a3000; border-color: #ff8f00; }
+[data-theme="dark"] .vote-btn.non.active { background: #4a1515; border-color: #c62828; }
+[data-theme="dark"] .budget-card { background: linear-gradient(135deg, #18241d, #1a241f); border-color: rgba(255,255,255,0.05); }
+[data-theme="dark"] .budget-strip, [data-theme="dark"] .b-row { background: #222; border-color: rgba(255,255,255,0.05); }
+[data-theme="dark"] .bs-block { border-color: rgba(255,255,255,0.05); }
+[data-theme="dark"] .budget-note { background: rgba(255,255,255,0.05); color: #ccc; }
+[data-theme="dark"] .prep-check { background: #333; border-color: #555; }
+[data-theme="dark"] .info-item { background: #262626; }
+[data-theme="dark"] .info-meteo { background: linear-gradient(135deg, #152c3f, #2d1e33); }
+[data-theme="dark"] .person-note textarea, [data-theme="dark"] .day-note textarea { background: #222; border-color: #444; color: #fff; }
+[data-theme="dark"] .toolbar { background: rgba(30,30,30,0.92); border-top-color: rgba(255,255,255,0.05); }
+[data-theme="dark"] .tb-btn.reset { background: #333; color: #ccc; }
+[data-theme="dark"] .alert { background: #382810; color: #f0a830; border-color: #f0a830; }
+[data-theme="dark"] .order-tip { background: #132a40; color: #5b9bd5; border-color: #5b9bd5; }
+[data-theme="dark"] .bonus-card { background: linear-gradient(135deg, #102416, #162a1a); border-color: #388e3c; color: #a5d6a7; }
+[data-theme="dark"] .map-panel { background: rgba(30, 30, 30, 0.95); color: #eee; }
+[data-theme="dark"] .activity-item { border-color: #444; }
+[data-theme="dark"] .act-name { color: #ccc; }
+[data-theme="dark"] .select-lodge-btn { background: #222; border: 1px solid #333; }
+[data-theme="dark"] .select-lodge-btn:hover { background: #333; }
+[data-theme="dark"] .select-lodge-btn.chosen { background: var(--green); border-color: var(--green); color: #fff; }
+
+/* Dark Mode Toggle Switch */
+.theme-switch { position: fixed; top: 12px; right: 16px; z-index: 1000; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(8px); cursor: pointer; color: #fff; font-size: 1.2rem; transition: all 0.3s; }
+.theme-switch:hover { transform: scale(1.1); background: rgba(255,255,255,0.25); }
+.theme-switch:active { transform: scale(0.9); }
+[data-theme="dark"] .theme-switch { background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.1); }
+</style>
+</head>
+<body>
+
+<button class="theme-switch" id="theme-toggle" title="Toggle Dark Mode">🌙</button>
+
+<!-- ═══ HERO ═══ -->
+<header class="hero">
+  <h1>Madeira 🏝️</h1>
+  <p>Vincent · Momo · Caro</p>
+  <div class="dates-badge">✨ Road trip accompli · 9 → 16 Octobre 2026 · 3 voyageurs</div>
+  <br>
+  <div class="trip-recap-badges" id="countdown">
+    <div class="tr-badge"><span>📅</span> 7 Jours de Road-Trip</div>
+    <div class="tr-badge"><span>⛰️</span> Pico Ruivo (1862m)</div>
+    <div class="tr-badge"><span>📸</span> 307 Polaroids & Vidéos</div>
+    <div class="tr-badge"><span>🚗</span> Tour complet de l'île</div>
+  </div>
+  <br>
+  <div class="weather-widget">
+    <div class="w-zone"><span>Période</span><span class="w-icon">🍂 9 → 16 Octobre</span></div>
+    <div class="w-divider"></div>
+    <div class="w-zone"><span>Bilan</span><span class="w-icon">☀️ 100% Inoubliable</span></div>
+  </div>
+  <br>
+  <div class="sync-badge"><span class="sync-dot on" id="heroSync"></span> <span id="heroSyncText">Carnet de voyage sauvegardé ✨</span></div>
+</header>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav" id="nav">
+  <div class="container">
+    <button class="pill active" data-s="album" onclick="go('album')">📸 Album (307)</button>
+    <button class="pill" data-s="map-section" onclick="go('map-section')">🗺️ Carte 3D</button>
+    <button class="pill" data-s="east" onclick="go('east')">🏔️ Est</button>
+    <button class="pill" data-s="north" onclick="go('north')">🌿 Nord</button>
+    <button class="pill" data-s="funchal" onclick="go('funchal')">🏘️ Funchal</button>
+    <button class="pill" data-s="lodging" onclick="go('lodging')">🏠 Logements</button>
+    <button class="pill" data-s="budget" onclick="go('budget')">💰 Bilan Budget</button>
+    <button class="pill" data-s="prep" onclick="go('prep')">🧳 Valises</button>
+    <button class="pill" data-s="info" onclick="go('info')">ℹ️ Infos</button>
+    <button class="pill" data-s="notes" onclick="go('notes')">💬 Souvenirs</button>
+  </div>
+</nav>
+
+<!-- ═══ MAP ═══ -->
+<section id="map-section" class="reveal" style="padding-top:20px;">
+  <div class="container">
+    <div style="background:#fff; border-radius:24px; box-shadow:var(--shadow); padding:8px; position:relative; overflow:hidden;">
+      <div id="madeira-map" style="width:100%; height:450px; border-radius:18px; z-index:1;"></div>
+      
+      <!-- Side Panel overlay -->
+      <div id="map-panel" class="map-panel">
+        <button class="panel-close" onclick="closeMapPanel()">×</button>
+        <h3 id="panel-title" class="panel-title">Lieu</h3>
+        <p id="panel-desc" class="panel-desc">Description du lieu.</p>
+        
+        <h4 style="font-size:0.9rem; text-transform:uppercase; color:#999; letter-spacing:1px; margin-bottom:8px;">Activités & Coûts</h4>
+        <ul id="panel-activities" class="activity-list">
+          <!-- Populated by JS -->
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ALBUM PHOTO ═══ -->
+<section class="info-section reveal" id="album" style="padding-top:14px;">
+  <div class="container">
+    <div class="album-book-wrap">
+      <div class="album-header-wrap">
+        <div class="album-stamp">★ MADÈRE 2026 · CARNET DE VOYAGE ★</div>
+        <h2 class="album-title-handwritten">L'Album Photos</h2>
+        <p class="album-subtitle">Nos 307 polaroids & vidéos de voyage du 9 au 16 octobre 2026. Cliquez sur un polaroid pour l'agrandir et feuilleter l'album.</p>
+        
+        <!-- Onglets / Filtres de l'album -->
+        <div class="album-tabs-bar" id="album-filters">
+          <button class="album-tab active" data-cat="all" onclick="filterAlbum('all')">
+            📸 Tout l'album <span class="badge-count" id="count-all">0</span>
+          </button>
+          <button class="album-tab" data-cat="sommets" onclick="filterAlbum('sommets')">
+            ⛰️ Sommets PR1 <span class="badge-count" id="count-sommets">0</span>
+          </button>
+          <button class="album-tab" data-cat="cotes" onclick="filterAlbum('cotes')">
+            🌊 Côtes & Océan <span class="badge-count" id="count-cotes">0</span>
+          </button>
+          <button class="album-tab" data-cat="piscines" onclick="filterAlbum('piscines')">
+            🏊 Piscines Naturelles <span class="badge-count" id="count-piscines">0</span>
+          </button>
+          <button class="album-tab" data-cat="nature" onclick="filterAlbum('nature')">
+            🌿 Levadas & Forêts <span class="badge-count" id="count-nature">0</span>
+          </button>
+          <button class="album-tab" data-cat="villages" onclick="filterAlbum('villages')">
+            🏡 Villages <span class="badge-count" id="count-villages">0</span>
+          </button>
+          <button class="album-tab" data-cat="video" onclick="filterAlbum('video')">
+            🎥 Vidéos <span class="badge-count" id="count-video">0</span>
+          </button>
+        </div>
+
+        <!-- Contrôles et compteurs -->
+        <div class="album-controls-bar">
+          <div id="album-status-text">Chargement des photos...</div>
+          <button class="album-sort-btn" onclick="toggleAlbumSort()" id="album-sort-btn" title="Changer l'ordre d'affichage">
+            ⏱️ Du 9 au 16 Octobre
+          </button>
+        </div>
+      </div>
+      
+      <!-- Grille Polaroids -->
+      <div id="photo-grid" class="polaroid-grid">
+        <div style="text-align:center; padding:50px 20px; color:var(--text-soft); grid-column: 1 / -1;">
+          <div style="font-size:2rem; margin-bottom:10px; animation:float 2s ease-in-out infinite;">📷</div>
+          <div>Ouverture de l'album photo...</div>
+        </div>
+      </div>
+
+      <!-- Pagination / Voir plus -->
+      <div id="album-pagination" class="album-load-more-wrap" style="display:none;">
+        <button class="album-more-btn" onclick="loadMorePhotos()" id="album-more-btn">
+          ✨ Tourner la page (<span id="more-count">36</span> polaroids de plus)
+        </button>
+        <button class="album-show-all-btn" onclick="showAllPhotos()">Voir tous les 307 polaroids</button>
+      </div>
+      
+      <div style="text-align:center; margin-top:28px;">
+        <a href="https://drive.google.com/drive/folders/1bKSJeVb_qGwkJbjIZeUmXumGtC3GHij_?usp=drive_link" target="_blank" style="display:inline-flex; align-items:center; gap:8px; background:var(--card); border:1px solid rgba(0,0,0,0.1); color:var(--accent); padding:10px 22px; border-radius:999px; text-decoration:none; font-size:.8rem; font-weight:700; box-shadow:var(--shadow); transition:all 0.25s var(--ease);">
+          <span>📁</span> Ouvrir le dossier Google Drive original
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Lightbox Carousel interactif -->
+<div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Aperçu photo plein écran">
+  <div class="lb-backdrop" onclick="closeLightbox()"></div>
+  
+  <!-- Top Bar -->
+  <div class="lb-topbar">
+    <div class="lb-counter" id="lb-counter">1 / 307</div>
+    <div class="lb-spot-badge" id="lb-spot-badge">⛰️ Pico Ruivo</div>
+    <div class="lb-actions">
+      <a id="lb-drive-link" href="#" target="_blank" class="lb-btn" title="Ouvrir sur Google Drive">
+        <span>↗</span> Drive
+      </a>
+      <button class="lb-btn lb-close-btn" onclick="closeLightbox()" title="Fermer (Échap)">✕</button>
+    </div>
+  </div>
+
+  <!-- Main Image Stage -->
+  <div class="lb-stage">
+    <button class="lb-nav lb-prev" onclick="prevLightbox(event)" title="Photo précédente (Flèche gauche)" aria-label="Photo précédente">❮</button>
+    
+    <div class="lb-img-wrap" id="lb-img-wrap">
+      <img id="lightbox-img" src="" alt="Photo de voyage">
+      <div id="lb-spinner" class="lb-spinner"></div>
+    </div>
+    
+    <button class="lb-nav lb-next" onclick="nextLightbox(event)" title="Photo suivante (Flèche droite)" aria-label="Photo suivante">❯</button>
+  </div>
+
+  <!-- Bottom Caption & Info -->
+  <div class="lb-bottombar">
+    <div class="lb-info-box">
+      <div class="lb-title" id="lb-title">Pico Ruivo</div>
+      <div class="lb-meta">
+        <span id="lb-location">📍 Madère</span>
+        <span class="lb-sep">•</span>
+        <span id="lb-date">📅 11 Octobre 2026</span>
+      </div>
+    </div>
+    <div class="lb-keyboard-hint">
+      <span>Utilisez ◀ Flèche gauche / droite ▶ pour feuilleter · Glissez sur mobile · Échap pour fermer</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ LODGING ═══ -->
+<section class="lodging-section" id="lodging">
+  <div class="container">
+    <div class="lodging-card reveal">
+      <h2>🏠 Nos Logements du Voyage</h2>
+      <p class="sub">Les 3 hébergements où nous avons séjourné durant notre road trip (Machico, São Vicente / Ponta Delgada & Funchal). ✨</p>
+
+      <!-- ── Étape 1: 9→12 oct ── -->
+      <div class="lodge-period">
+        <span>📍 9 → 12 Oct · Machico</span>
+        <span>3 nuits</span>
+      </div>
+
+      <div class="lodge-opt reveal" data-lodge="machico-A">
+        <div class="lodge-opt-header">
+          <div class="lodge-opt-name">🏷️ Option A (Airbnb)</div>
+          <div class="lodge-price">
+            <div class="total"><input type="number" class="price-edit" value="230" data-lp="machico-A"> €</div>
+            <div class="pp" data-pp="machico-A">76 € / pers.</div>
+          </div>
+        </div>
+        <div style="margin-bottom: 10px;">
+          <a href="https://fr.airbnb.com/rooms/26884921" target="_blank" class="book-btn bb-airbnb">🏨 Voir sur Airbnb</a>
+        </div>
+        <div class="lodge-votes">
+          <span class="vote-label">Vincent</span>
+          <button class="vote-btn oui" onclick="vote('machico-A','vincent','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('machico-A','vincent','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('machico-A','vincent','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Momo</span>
+          <button class="vote-btn oui" onclick="vote('machico-A','momo','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('machico-A','momo','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('machico-A','momo','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Caro</span>
+          <button class="vote-btn oui" onclick="vote('machico-A','caro','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('machico-A','caro','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('machico-A','caro','non')">Non</button>
+        </div>
+        <button class="select-lodge-btn" onclick="selectLodge('etape1','machico-A')">✓ Choisir cette option</button>
+      </div>
+
+      <div class="lodge-opt reveal" data-lodge="machico-B">
+        <div class="lodge-opt-header">
+          <div class="lodge-opt-name">🏷️ Option B (Booking)</div>
+          <div class="lodge-price">
+            <div class="total"><input type="number" class="price-edit" value="250" data-lp="machico-B"> €</div>
+            <div class="pp" data-pp="machico-B">83 € / pers.</div>
+          </div>
+        </div>
+        <div style="margin-bottom: 10px;">
+          <a href="https://www.booking.com/hotel/pt/charming-retreat-machico-5-min-praia-amp-centro-b.fr.html" target="_blank" class="book-btn bb-booking">🏨 Voir sur Booking</a>
+        </div>
+        <div class="lodge-votes">
+          <span class="vote-label">Vincent</span>
+          <button class="vote-btn oui" onclick="vote('machico-B','vincent','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('machico-B','vincent','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('machico-B','vincent','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Momo</span>
+          <button class="vote-btn oui" onclick="vote('machico-B','momo','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('machico-B','momo','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('machico-B','momo','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Caro</span>
+          <button class="vote-btn oui" onclick="vote('machico-B','caro','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('machico-B','caro','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('machico-B','caro','non')">Non</button>
+        </div>
+        <button class="select-lodge-btn" onclick="selectLodge('etape1','machico-B')">✓ Choisir cette option</button>
+      </div>
+
+      <div class="lodge-opt reveal" data-lodge="machico-C">
+        <div class="lodge-opt-header">
+          <div class="lodge-opt-name">🏷️ Option C (Booking)</div>
+          <div class="lodge-price">
+            <div class="total"><input type="number" class="price-edit" value="260" data-lp="machico-C"> €</div>
+            <div class="pp" data-pp="machico-C">86 € / pers.</div>
+          </div>
+        </div>
+        <div style="margin-bottom: 10px;">
+          <a href="https://www.booking.com/hotel/pt/discovery-i.fr.html" target="_blank" class="book-btn bb-booking">🏨 Voir sur Booking</a>
+        </div>
+        <div class="lodge-votes">
+          <span class="vote-label">Vincent</span>
+          <button class="vote-btn oui" onclick="vote('machico-C','vincent','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('machico-C','vincent','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('machico-C','vincent','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Momo</span>
+          <button class="vote-btn oui" onclick="vote('machico-C','momo','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('machico-C','momo','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('machico-C','momo','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Caro</span>
+          <button class="vote-btn oui" onclick="vote('machico-C','caro','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('machico-C','caro','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('machico-C','caro','non')">Non</button>
+        </div>
+        <button class="select-lodge-btn" onclick="selectLodge('etape1','machico-C')">✓ Choisir cette option</button>
+      </div>
+
+      <div class="lodge-opt reveal" data-lodge="machico-D">
+        <div class="lodge-opt-header">
+          <div class="lodge-opt-name">🏷️ Option D (Trip.com)</div>
+          <div class="lodge-price">
+            <div class="total"><input type="number" class="price-edit" value="240" data-lp="machico-D"> €</div>
+            <div class="pp" data-pp="machico-D">80 € / pers.</div>
+          </div>
+        </div>
+        <div style="margin-bottom: 10px;">
+          <a href="https://fr.trip.com/hotels/detail/?hotelId=133370350" target="_blank" class="book-btn bb-trip">🏨 Voir sur Trip.com</a>
+        </div>
+        <div class="lodge-votes">
+          <span class="vote-label">Vincent</span>
+          <button class="vote-btn oui" onclick="vote('machico-D','vincent','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('machico-D','vincent','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('machico-D','vincent','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Momo</span>
+          <button class="vote-btn oui" onclick="vote('machico-D','momo','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('machico-D','momo','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('machico-D','momo','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Caro</span>
+          <button class="vote-btn oui" onclick="vote('machico-D','caro','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('machico-D','caro','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('machico-D','caro','non')">Non</button>
+        </div>
+        <button class="select-lodge-btn" onclick="selectLodge('etape1','machico-D')">✓ Choisir cette option</button>
+      </div>
+
+      <!-- ── Étape 2: 12→15 oct ── -->
+      <div class="lodge-period">
+        <span>📍 12 → 15 Oct · Côte Nord</span>
+        <span>3 nuits</span>
+      </div>
+
+      <div class="lodge-opt reveal" data-lodge="nord-1">
+        <div class="lodge-opt-header">
+          <div class="lodge-opt-name">🏷️ Option 01 (São Vicente)</div>
+          <div class="lodge-price">
+            <div class="total"><input type="number" class="price-edit" value="273" data-lp="nord-1"> €</div>
+            <div class="pp" data-pp="nord-1">91 € / pers.</div>
+          </div>
+        </div>
+        <div style="margin-bottom: 10px;">
+          <a href="https://www.booking.com/hotel/pt/sao-vicente-guest-house.fr.html" target="_blank" style="display:inline-block; font-size:0.75rem; background:#003580; color:#fff; padding:4px 10px; border-radius:6px; text-decoration:none; font-weight:600;">👁️ Voir sur Booking</a>
+        </div>
+        <div class="lodge-votes">
+          <span class="vote-label">Vincent</span>
+          <button class="vote-btn oui" onclick="vote('nord-1','vincent','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('nord-1','vincent','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('nord-1','vincent','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Momo</span>
+          <button class="vote-btn oui" onclick="vote('nord-1','momo','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('nord-1','momo','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('nord-1','momo','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Caro</span>
+          <button class="vote-btn oui" onclick="vote('nord-1','caro','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('nord-1','caro','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('nord-1','caro','non')">Non</button>
+        </div>
+        <button class="select-lodge-btn" onclick="selectLodge('etape2','nord-1')">✓ Choisir cette option</button>
+      </div>
+
+      <div class="lodge-opt reveal" data-lodge="nord-2">
+        <div class="lodge-opt-header">
+          <div class="lodge-opt-name">🏷️ Option 02 (Ponta Delgada)</div>
+          <div class="lodge-price">
+            <div class="total"><input type="number" class="price-edit" value="254" data-lp="nord-2"> €</div>
+            <div class="pp" data-pp="nord-2">85 € / pers.</div>
+          </div>
+        </div>
+        <div style="margin-bottom: 10px;">
+          <a href="https://fr.airbnb.com/rooms/5315743" target="_blank" style="display:inline-block; font-size:0.75rem; background:var(--accent); color:#fff; padding:4px 10px; border-radius:6px; text-decoration:none; font-weight:600;">👁️ Voir sur Airbnb</a>
+        </div>
+        <div class="lodge-votes">
+          <span class="vote-label">Vincent</span>
+          <button class="vote-btn oui" onclick="vote('nord-2','vincent','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('nord-2','vincent','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('nord-2','vincent','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Momo</span>
+          <button class="vote-btn oui" onclick="vote('nord-2','momo','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('nord-2','momo','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('nord-2','momo','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Caro</span>
+          <button class="vote-btn oui" onclick="vote('nord-2','caro','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('nord-2','caro','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('nord-2','caro','non')">Non</button>
+        </div>
+        <button class="select-lodge-btn" onclick="selectLodge('etape2','nord-2')">✓ Choisir cette option</button>
+      </div>
+
+      <div class="lodge-opt reveal" data-lodge="nord-3">
+        <div class="lodge-opt-header">
+          <div class="lodge-opt-name">🏷️ Option 03 (Ponta Delgada)</div>
+          <div class="lodge-price">
+            <div class="total"><input type="number" class="price-edit" value="273" data-lp="nord-3"> €</div>
+            <div class="pp" data-pp="nord-3">91 € / pers.</div>
+          </div>
+        </div>
+        <div style="margin-bottom: 10px;">
+          <a href="https://www.booking.com/hotel/pt/estalagem-corte-do-norte-ponta-delgada.fr.html" target="_blank" style="display:inline-block; font-size:0.75rem; background:#003580; color:#fff; padding:4px 10px; border-radius:6px; text-decoration:none; font-weight:600;">👁️ Voir sur Booking</a>
+        </div>
+        <div class="lodge-votes">
+          <span class="vote-label">Vincent</span>
+          <button class="vote-btn oui" onclick="vote('nord-3','vincent','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('nord-3','vincent','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('nord-3','vincent','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Momo</span>
+          <button class="vote-btn oui" onclick="vote('nord-3','momo','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('nord-3','momo','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('nord-3','momo','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Caro</span>
+          <button class="vote-btn oui" onclick="vote('nord-3','caro','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('nord-3','caro','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('nord-3','caro','non')">Non</button>
+        </div>
+        <button class="select-lodge-btn" onclick="selectLodge('etape2','nord-3')">✓ Choisir cette option</button>
+      </div>
+
+      <!-- ── Étape 3: 15→16 oct ── -->
+      <div class="lodge-period">
+        <span>📍 15 → 16 Oct · Funchal</span>
+        <span>1 nuit</span>
+      </div>
+
+      <div class="lodge-opt reveal" data-lodge="fun-1">
+        <div class="lodge-opt-header">
+          <div class="lodge-opt-name">🏷️ Option 01 (Hostel)</div>
+          <div class="lodge-price">
+            <div class="total"><input type="number" class="price-edit" value="70" data-lp="fun-1"> €</div>
+            <div class="pp" data-pp="fun-1">23 € / pers.</div>
+          </div>
+        </div>
+        <div style="margin-bottom: 10px;">
+          <a href="https://www.french.hostelworld.com/pwa/hosteldetails.php/Residencial-Monaco/Funchal/75715" target="_blank" style="display:inline-block; font-size:0.75rem; background:#f26222; color:#fff; padding:4px 10px; border-radius:6px; text-decoration:none; font-weight:600;">👁️ Voir sur Hostelworld</a>
+        </div>
+        <div class="lodge-votes">
+          <span class="vote-label">Vincent</span>
+          <button class="vote-btn oui" onclick="vote('fun-1','vincent','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('fun-1','vincent','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('fun-1','vincent','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Momo</span>
+          <button class="vote-btn oui" onclick="vote('fun-1','momo','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('fun-1','momo','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('fun-1','momo','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Caro</span>
+          <button class="vote-btn oui" onclick="vote('fun-1','caro','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('fun-1','caro','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('fun-1','caro','non')">Non</button>
+        </div>
+        <button class="select-lodge-btn" onclick="selectLodge('etape3','fun-1')">✓ Choisir cette option</button>
+      </div>
+
+      <div class="lodge-opt reveal" data-lodge="fun-2">
+        <div class="lodge-opt-header">
+          <div class="lodge-opt-name">🏷️ Option 02 (Airbnb)</div>
+          <div class="lodge-price">
+            <div class="total"><input type="number" class="price-edit" value="108" data-lp="fun-2"> €</div>
+            <div class="pp" data-pp="fun-2">36 € / pers.</div>
+          </div>
+        </div>
+        <div style="margin-bottom: 10px;">
+          <a href="https://fr.airbnb.com/rooms/1637584730331319648" target="_blank" style="display:inline-block; font-size:0.75rem; background:var(--accent); color:#fff; padding:4px 10px; border-radius:6px; text-decoration:none; font-weight:600;">👁️ Voir sur Airbnb</a>
+        </div>
+        <div class="lodge-votes">
+          <span class="vote-label">Vincent</span>
+          <button class="vote-btn oui" onclick="vote('fun-2','vincent','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('fun-2','vincent','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('fun-2','vincent','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Momo</span>
+          <button class="vote-btn oui" onclick="vote('fun-2','momo','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('fun-2','momo','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('fun-2','momo','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Caro</span>
+          <button class="vote-btn oui" onclick="vote('fun-2','caro','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('fun-2','caro','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('fun-2','caro','non')">Non</button>
+        </div>
+        <button class="select-lodge-btn" onclick="selectLodge('etape3','fun-2')">✓ Choisir cette option</button>
+      </div>
+
+      <div class="lodge-opt reveal" data-lodge="fun-3">
+        <div class="lodge-opt-header">
+          <div class="lodge-opt-name">🏷️ 🧡 Option 03 (Airbnb)</div>
+          <div class="lodge-price">
+            <div class="total"><input type="number" class="price-edit" value="180" data-lp="fun-3"> €</div>
+            <div class="pp" data-pp="fun-3">60 € / pers.</div>
+          </div>
+        </div>
+        <div style="margin-bottom: 10px;">
+          <a href="https://fr.airbnb.com/rooms/1437146092888977049" target="_blank" style="display:inline-block; font-size:0.75rem; background:var(--accent); color:#fff; padding:4px 10px; border-radius:6px; text-decoration:none; font-weight:600;">👁️ Voir sur Airbnb</a>
+        </div>
+        <div class="lodge-votes">
+          <span class="vote-label">Vincent</span>
+          <button class="vote-btn oui" onclick="vote('fun-3','vincent','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('fun-3','vincent','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('fun-3','vincent','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Momo</span>
+          <button class="vote-btn oui" onclick="vote('fun-3','momo','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('fun-3','momo','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('fun-3','momo','non')">Non</button>
+          <span style="width:8px"></span>
+          <span class="vote-label">Caro</span>
+          <button class="vote-btn oui" onclick="vote('fun-3','caro','oui')">Oui</button>
+          <button class="vote-btn bof" onclick="vote('fun-3','caro','bof')">Bof</button>
+          <button class="vote-btn non" onclick="vote('fun-3','caro','non')">Non</button>
+        </div>
+        <button class="select-lodge-btn" onclick="selectLodge('etape3','fun-3')">✓ Choisir cette option</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ BUDGET ═══ -->
+<section class="budget-section" id="budget">
+  <div class="container">
+    <div class="budget-card reveal">
+      <h2>💰 Budget · 3 Voyageurs</h2>
+      <p class="sub">Cliquez sur les montants pour les modifier. Tout se recalcule et se synchronise ✏️</p>
+
+      <div class="budget-chart-container">
+        <div class="b-chart" id="bChart">
+          <div class="b-chart-val" id="bChartVal">—</div>
+        </div>
+        <div class="b-chart-info">
+          <div class="b-chart-title">Coût estimé par personne</div>
+          <div class="b-chart-sub">Logement + Voiture + Repas</div>
+        </div>
+      </div>
+
+      <div class="budget-strip">
+        <div class="bs-block">
+          <div class="bs-label">Total groupe</div>
+          <div class="bs-amt" id="budgetTotal">—</div>
+        </div>
+        <div class="bs-block">
+          <div class="bs-label">Par personne</div>
+          <div class="bs-amt sec" id="budgetPP">—</div>
+          <div class="bs-sub" id="budgetPerDay"></div>
+        </div>
+      </div>
+
+      <div class="budget-rows">
+        <div class="b-row">
+          <div class="be">🏠</div>
+          <div class="bi"><div class="bn">Hébergement</div><div class="bd">7 nuits · selon options choisies</div></div>
+          <div class="bp"><div class="bt" id="bLodge">—</div><div class="bpp" id="bLodgePP"></div></div>
+        </div>
+        <div class="b-row">
+          <div class="be">🚗</div>
+          <div class="bi"><div class="bn">Voiture (réservée ✅)</div><div class="bd">7 jours · réservation confirmée</div></div>
+          <div class="bp"><div class="bt"><input type="number" class="price-edit" value="350" data-bp="car"> €</div><div class="bpp" data-bpp="car">117 € / pers.</div></div>
+        </div>
+        <div class="b-row">
+          <div class="be">🍽️</div>
+          <div class="bi"><div class="bn">Repas & boissons</div><div class="bd">~25 €/pers./jour · restos + courses</div></div>
+          <div class="bp"><div class="bt"><input type="number" class="price-edit" value="600" data-bp="food"> €</div><div class="bpp" data-bpp="food">200 € / pers.</div></div>
+        </div>
+        <div class="b-row">
+          <div class="be">🎟️</div>
+          <div class="bi"><div class="bn">Activités</div><div class="bd">Téléphérique, carreiros, piscines…</div></div>
+          <div class="bp"><div class="bt"><input type="number" class="price-edit" value="210" data-bp="activities"> €</div><div class="bpp" data-bpp="activities">70 € / pers.</div></div>
+        </div>
+        <div class="b-row">
+          <div class="be">🧃</div>
+          <div class="bi"><div class="bn">Divers</div><div class="bd">Poncha, pastéis, souvenirs, parking</div></div>
+          <div class="bp"><div class="bt"><input type="number" class="price-edit" value="110" data-bp="misc"> €</div><div class="bpp" data-bpp="misc">37 € / pers.</div></div>
+        </div>
+      </div>
+
+      <div class="budget-note">💡 <strong>Hors vols.</strong> Cliquez sur n'importe quel montant pour l'ajuster. Les randonnées sont gratuites.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 1 — EST ═══ -->
+<section class="section section-east" id="east">
+  <div class="container">
+    <div class="sec-title"><span class="dot" style="background:#b08968"></span> 9–12 Oct · Est sauvage & Sommets (Accompli ✅)</div>
+    <div class="timeline">
+
+      <div class="day-card reveal" id="day1">
+        <div class="day-badge">📅 Jour 1 · 9 Oct</div>
+        <h3>Funchal — Arrivée</h3>
+        <ul class="act-list">
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d1-1"></div><span class="ico">🚡</span><span>Monte & Téléphérique</span></li>
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d1-2"></div><span class="ico">🛷</span><span>Carreiros do Monte</span></li>
+        </ul>
+        <div class="bonus-card"><div class="bh">💎 Bonus</div><ul><li>🍷 <strong>Blandy's Wine Lodge</strong> — dégustation vin de Madère (~10 €)</li><li>🌺 <strong>Jardin Botanique</strong> — vue panoramique</li></ul></div>
+        <div class="day-note"><textarea placeholder="📝 Notes pour ce jour (logistique, horaires, liens…)" data-key="note-d1"></textarea></div>
+      </div>
+
+      <div class="day-card reveal" id="day2">
+        <div class="day-badge">📅 Jour 2 · 10 Oct</div>
+        <h3>PR8 — Ponta de São Lourenço</h3>
+        <ul class="act-list">
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d2-1"></div><span class="ico">🥾</span><span>PR8 Randonnée São Lourenço</span><div class="hike-badge" style="margin-top:0"><span class="hb-diff medium">Medium</span><svg class="hb-chart" viewBox="0 0 50 16"><path d="M0,14 Q10,8 20,12 T35,6 T50,10"/></svg></div></li>
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d2-2"></div><span class="ico">🏖️</span><span>Plage de Machico</span></li>
+        </ul>
+        <div class="bonus-card"><div class="bh">💎 Bonus</div><ul><li>🤿 <strong>Réserve du Garajau</strong> — snorkeling</li><li>🐟 <strong>Mercado de Machico</strong> — poisson grillé</li></ul></div>
+        <div class="day-note"><textarea placeholder="📝 Notes…" data-key="note-d2"></textarea></div>
+      </div>
+
+      <div class="day-card reveal" id="day3">
+        <div class="day-badge">📅 Jour 3 · 11 Oct</div>
+        <h3>PR1 — Pico Arieiro → Pico Ruivo</h3>
+        <ul class="act-list">
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d3-1"></div><span class="ico">🌄</span><span>Lever de soleil Pico Arieiro → Pico Ruivo</span><div class="hike-badge" style="margin-top:0"><span class="hb-diff hard">Hard</span><svg class="hb-chart" viewBox="0 0 50 16" style="stroke:var(--red)"><path d="M0,16 L10,6 L20,10 L30,2 L40,8 L50,0"/></svg></div></li>
+        </ul>
+        <div class="alert">⚠️ <span>Réservez le transfert retour ou démarrez depuis <strong>Achada do Teixeira</strong>.</span></div>
+        <div class="order-tip">🗓️ <span>Si couvert, intervertissez avec Jour 4 (Caldeirão Verde fonctionne sous la pluie).</span></div>
+        <div class="bonus-card"><div class="bh">💎 Bonus</div><ul><li>🌌 <strong>Ciel étoilé</strong> — meilleur spot de Madère la veille au coucher du soleil</li></ul></div>
+        <div class="day-note"><textarea placeholder="📝 Notes…" data-key="note-d3"></textarea></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 2 — NORD ═══ -->
+<section class="section section-north" id="north">
+  <div class="container">
+    <div class="sec-title"><span class="dot" style="background:#52796f"></span> 12–15 Oct · Nord vert & Côtes sauvages (Accompli ✅)</div>
+    <div class="timeline">
+
+      <div class="day-card reveal" id="day4">
+        <div class="day-badge">📅 Jour 4 · 12 Oct</div>
+        <h3>Caldeirão Verde, Balcões & Santana</h3>
+        <ul class="act-list">
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d4-1"></div><span class="ico">🌿</span><span>PR9 Caldeirão Verde</span><div class="hike-badge" style="margin-top:0"><span class="hb-diff easy">Easy</span><svg class="hb-chart" viewBox="0 0 50 16" style="stroke:var(--green)"><path d="M0,10 L25,12 L50,11"/></svg></div></li>
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d4-2"></div><span class="ico">🔭</span><span>PR11 Levada dos Balcões</span></li>
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d4-3"></div><span class="ico">🏡</span><span>Santana — maisons triangulaires</span></li>
+        </ul>
+        <div class="order-tip">🗓️ <span>Caldeirão Verde en premier (3–4h), Balcões (30 min), Santana en fin de journée.</span></div>
+        <div class="bonus-card"><div class="bh">💎 Bonus</div><ul><li>🌊 <strong>Caldeirão do Inferno</strong> — +2h pour la cascade cachée</li><li>🫓 <strong>Bolo do Caco</strong> — pain au beurre d'ail à Santana</li></ul></div>
+        <div class="day-note"><textarea placeholder="📝 Notes…" data-key="note-d4"></textarea></div>
+      </div>
+
+      <div class="day-card reveal" id="day5">
+        <div class="day-badge">📅 Jour 5 · 13 Oct</div>
+        <h3>Fanal, Seixal & Porto Moniz</h3>
+        <ul class="act-list">
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d5-1"></div><span class="ico">🌳</span><span>Forêt de Fanal</span></li>
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d5-2"></div><span class="ico">🪨</span><span>Ribeira da Janela</span></li>
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d5-3"></div><span class="ico">🏖️</span><span>Plage de Seixal — sable noir</span></li>
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d5-4"></div><span class="ico">🏊</span><span>Piscines de Porto Moniz</span></li>
+        </ul>
+        <div class="order-tip">🗓️ <span>Fanal tôt (brouillard = photos magiques), puis côte d'est en ouest. Piscines au coucher du soleil.</span></div>
+        <div class="bonus-card"><div class="bh">💎 Bonus</div><ul><li>🌅 <strong>Miradouro Véu da Noiva</strong> — cascade dans la mer</li><li>🧭 <strong>Grottes de São Vicente</strong> — tubes de lave (~8 €)</li></ul></div>
+        <div class="day-note"><textarea placeholder="📝 Notes…" data-key="note-d5"></textarea></div>
+      </div>
+
+      <div class="day-card reveal" id="day6">
+        <div class="day-badge">📅 Jour 6 · 14 Oct</div>
+        <h3>PR6 — 25 Fontes & Cascade Risco</h3>
+        <ul class="act-list">
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d6-1"></div><span class="ico">💧</span><span>PR6 Levada das 25 Fontes</span><div class="hike-badge" style="margin-top:0"><span class="hb-diff medium">Medium</span><svg class="hb-chart" viewBox="0 0 50 16"><path d="M0,8 L20,10 L30,6 L50,12"/></svg></div></li>
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d6-2"></div><span class="ico">🌊</span><span>Cascade Risco (100 m)</span></li>
+        </ul>
+        <div class="alert">⚠️ <span>Parking de <strong>Rabaçal avant 8h30</strong> — il se remplit vite !</span></div>
+        <div class="order-tip">🗓️ <span>Faites Risco d'abord (20 min), puis 25 Fontes. Moins de monde.</span></div>
+        <div class="bonus-card"><div class="bh">💎 Bonus</div><ul><li>🪂 <strong>Parapente à Arco da Calheta</strong> — vol tandem ~100 €/pers.</li></ul></div>
+        <div class="day-note"><textarea placeholder="📝 Notes…" data-key="note-d6"></textarea></div>
+      </div>
+
+      <div class="day-card reveal" id="day7">
+        <div class="day-badge">📅 Jour 7 · 15 Oct</div>
+        <h3>Curral das Freiras & Câmara de Lobos</h3>
+        <ul class="act-list">
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d7-1"></div><span class="ico">⛪</span><span>Curral das Freiras — Vallée des Nonnes</span></li>
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d7-2"></div><span class="ico">🎨</span><span>Câmara de Lobos</span></li>
+        </ul>
+        <div class="order-tip">🗓️ <span>Journée relax avant de rendre la voiture le soir à Funchal.</span></div>
+        <div class="bonus-card"><div class="bh">💎 Bonus</div><ul><li>🍹 <strong>Poncha</strong> à « A Venda Velha » face au port</li><li>🐬 <strong>Dauphins & baleines</strong> — excursion ~40 €/pers.</li><li>🌅 <strong>Cabo Girão</strong> — passerelle en verre 580 m. Gratuit</li></ul></div>
+        <div class="day-note"><textarea placeholder="📝 Notes…" data-key="note-d7"></textarea></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 3 — FUNCHAL ═══ -->
+<section class="section section-funchal" id="funchal">
+  <div class="container">
+    <div class="sec-title"><span class="dot" style="background:#7b6fa6"></span> 15–16 Oct · Funchal, Capitale & Départ (Accompli ✅)</div>
+    <div class="timeline">
+      <div class="day-card reveal" id="day8">
+        <div class="day-badge">📅 Jour 8 · 16 Oct</div>
+        <h3>Marché, Vieille Ville & Départ</h3>
+        <ul class="act-list">
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d8-1"></div><span class="ico">🍊</span><span>Mercado dos Lavradores</span></li>
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d8-2"></div><span class="ico">🎭</span><span>Zona Velha — portes peintes</span></li>
+          <li class="act-item"><div class="act-check" onclick="toggleCheck(this)" data-key="d8-3"></div><span class="ico">✈️</span><span>Départ aéroport</span></li>
+        </ul>
+        <div class="order-tip">🗓️ <span>Pas de voiture. Tout à pied. Marché ouvert dès 7h (fermé dimanche).</span></div>
+        <div class="bonus-card"><div class="bh">💎 Bonus</div><ul><li>🍰 <strong>Pastel de nata</strong> — Fábrica Santo António (depuis 1893)</li><li>🎵 <strong>Rua de Santa Maria</strong> — 200+ portes peintes</li></ul></div>
+        <div class="day-note"><textarea placeholder="📝 Notes…" data-key="note-d8"></textarea></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CHECKLIST PRÉ-DÉPART ═══ -->
+<section class="prep-section" id="prep">
+  <div class="container">
+    <div class="prep-card reveal">
+      <h2>🧳 Checklist pré-départ</h2>
+      <p class="sub">Cochez au fur et à mesure. Synchronisé entre tous !</p>
+
+      <div class="prep-cat">📄 Documents</div>
+      <ul class="prep-list">
+        <li class="prep-item" onclick="togglePrep(this)" data-key="prep-1"><div class="prep-check"></div><span class="prep-text">🛂 Passeport ou Carte d'identité valide</span></li>
+        <li class="prep-item" onclick="togglePrep(this)" data-key="prep-2"><div class="prep-check"></div><span class="prep-text">🚗 Permis de conduire</span></li>
+        <li class="prep-item" onclick="togglePrep(this)" data-key="prep-3"><div class="prep-check"></div><span class="prep-text">📋 Confirmation réservation voiture (350 €)</span></li>
+        <li class="prep-item" onclick="togglePrep(this)" data-key="prep-4"><div class="prep-check"></div><span class="prep-text">🏠 Confirmations hébergements (Airbnb)</span></li>
+        <li class="prep-item" onclick="togglePrep(this)" data-key="prep-5"><div class="prep-check"></div><span class="prep-text">✈️ Billets d'avion / cartes d'embarquement</span></li>
+        <li class="prep-item" onclick="togglePrep(this)" data-key="prep-6"><div class="prep-check"></div><span class="prep-text">🏥 Carte européenne d'assurance maladie (CEAM)</span></li>
+      </ul>
+
+      <div class="prep-cat collapsible-header" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')">👕 Bagages essentiels (Ouvrir)</div>
+      <ul class="prep-list collapsible-content">
+        <li class="prep-item" onclick="togglePrep(this)" data-key="prep-10"><div class="prep-check"></div><span class="prep-text">🥾 Chaussures de randonnée (Hiking boots)</span></li>
+        <li class="prep-item" onclick="togglePrep(this)" data-key="prep-11"><div class="prep-check"></div><span class="prep-text">🏊 Maillot de bain (Swimsuit) + serviettes</span></li>
+        <li class="prep-item" onclick="togglePrep(this)" data-key="prep-12"><div class="prep-check"></div><span class="prep-text">🧥 Veste imperméable / K-way (Rain jacket)</span></li>
+        <li class="prep-item" onclick="togglePrep(this)" data-key="prep-13"><div class="prep-check"></div><span class="prep-text">☀️ Crème solaire (Sunscreen) + casquette</span></li>
+        <li class="prep-item" onclick="togglePrep(this)" data-key="prep-14"><div class="prep-check"></div><span class="prep-text">🔦 Lampe frontale (Headlamp pour tunnels PR9)</span></li>
+        <li class="prep-item" onclick="togglePrep(this)" data-key="prep-15"><div class="prep-check"></div><span class="prep-text">💧 Gourde / bouteille d'eau</span></li>
+        <li class="prep-item" onclick="togglePrep(this)" data-key="prep-16"><div class="prep-check"></div><span class="prep-text">💊 Trousse pharmacie (anti-douleur, pansements)</span></li>
+      </ul>
+
+      <div class="prep-cat collapsible-header" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')">📱 Tech & divers (Ouvrir)</div>
+      <ul class="prep-list collapsible-content">
+        <li class="prep-item" onclick="togglePrep(this)" data-key="prep-20"><div class="prep-check"></div><span class="prep-text">📱 Chargeur(s) + batterie externe</span></li>
+        <li class="prep-item" onclick="togglePrep(this)" data-key="prep-21"><div class="prep-check"></div><span class="prep-text">📷 Appareil photo / GoPro</span></li>
+        <li class="prep-item" onclick="togglePrep(this)" data-key="prep-22"><div class="prep-check"></div><span class="prep-text">🗺️ Télécharger carte Madère hors-ligne (Google Maps)</span></li>
+        <li class="prep-item" onclick="togglePrep(this)" data-key="prep-23"><div class="prep-check"></div><span class="prep-text">💳 Vérifier carte bancaire (frais étranger ? plafond ?)</span></li>
+        <li class="prep-item" onclick="togglePrep(this)" data-key="prep-24"><div class="prep-check"></div><span class="prep-text">🎵 Playlist route / enceinte bluetooth</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ INFOS PRATIQUES ═══ -->
+<section class="info-section" id="info">
+  <div class="container">
+    <div class="info-card reveal">
+      <h2>ℹ️ Retours d'expérience & Infos Madère</h2>
+      <div class="info-grid">
+        <div class="info-item"><span class="ii-icon">🕐</span><span class="ii-label">Fuseau horaire</span><span class="ii-value">UTC+0 — 1h de moins que la France</span></div>
+        <div class="info-item"><span class="ii-icon">💶</span><span class="ii-label">Monnaie</span><span class="ii-value">Euro (€) — pas de change</span></div>
+        <div class="info-item"><span class="ii-icon">🔌</span><span class="ii-label">Prises</span><span class="ii-value">Type F — comme en France ✅</span></div>
+        <div class="info-item"><span class="ii-icon">📞</span><span class="ii-label">Urgences</span><span class="ii-value">112 (universel UE)</span></div>
+        <div class="info-item"><span class="ii-icon">🚗</span><span class="ii-label">Conduite</span><span class="ii-value">À droite, comme en France</span></div>
+        <div class="info-item"><span class="ii-icon">📶</span><span class="ii-label">Réseau</span><span class="ii-value">4G/5G · Roaming UE inclus</span></div>
+        <div class="info-item"><span class="ii-icon">💰</span><span class="ii-label">Pourboires</span><span class="ii-value">Non obligatoires, 5-10% apprécié</span></div>
+      </div>
+      <div class="info-meteo">
+        🌤️ <strong>Météo octobre :</strong> 20–24°C côtes, 10–15°C en montagne. Pluie possible en altitude (nord + sommets). Prévoir une veste imperméable pour les randos. Le sud est généralement ensoleillé.
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ═══ NOTES & COMMENTAIRES ═══ -->
+<section class="notes-section" id="notes">
+  <div class="container">
+    <div class="notes-card reveal">
+      <h2>💬 Le Livre d'Or & Souvenirs du Groupe</h2>
+      <p class="sub" style="margin-bottom:14px; font-size:0.75rem; color:var(--text-soft);">Nos anecdotes, impressions et meilleurs moments de Vincent, Momo et Caro.</p>
+      <div class="person-note">
+        <label><span class="avatar av-v">V</span> Vincent</label>
+        <textarea data-key="comment-vincent" placeholder="Tes remarques, idées, préférences…"></textarea>
+      </div>
+      <div class="person-note">
+        <label><span class="avatar av-m">M</span> Momo</label>
+        <textarea data-key="comment-momo" placeholder="Tes remarques, idées, préférences…"></textarea>
+      </div>
+      <div class="person-note">
+        <label><span class="avatar av-c">C</span> Caro</label>
+        <textarea data-key="comment-caro" placeholder="Tes remarques, idées, préférences…"></textarea>
+      </div>
+    </div>
+    <div class="notes-card reveal">
+      <h2>📋 Notes générales</h2>
+      <div class="person-note">
+        <textarea data-key="comment-general" placeholder="Infos vols, réservations, numéros utiles, liens Airbnb…" style="min-height:100px"></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><p>Madeira Oct 2026 · Vincent · Momo · Caro · <span class="heart">♥</span></p></footer>
+
+<!-- ═══ TOOLBAR ═══ -->
+<div class="toolbar">
+  <div class="tb-sync"><span class="sync-d off" id="tbSync"></span> <span id="tbSyncText">Connexion…</span></div>
+  <button class="tb-btn reset" onclick="if(confirm('⚠️ Tout réinitialiser pour TOUT LE MONDE ?')){tripRef.set(null);location.reload()}">🗑️ Reset</button>
+</div>
+<div class="save-toast" id="toast">✅ Synchronisé !</div>
+
+<script>
+// ═══ FIREBASE INIT ═══
+const firebaseConfig = {
+  apiKey: "AIzaSyCIzKf4AQ0SK5ti0rDcpyUr1fSgVE-PurY",
+  authDomain: "madeira-aefad.firebaseapp.com",
+  databaseURL: "https://madeira-aefad-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "madeira-aefad",
+  storageBucket: "madeira-aefad.firebasestorage.app",
+  messagingSenderId: "41369100239",
+  appId: "1:41369100239:web:0fcad699372345d45f7cba"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const tripRef = db.ref('trip');
+
+// ═══ DEFAULTS ═══
+const LODGE_DEFAULTS = {'machico-1':230,'sv-1':273,'pd-2':254,'pd-3':273,'fun-1':70,'fun-2':108,'fun-3':180};
+const BUDGET_DEFAULTS = {car:350,food:600,activities:210,misc:110};
+const PERIODS = {etape1:['machico-1'],etape2:['sv-1','pd-2','pd-3'],etape3:['fun-1','fun-2','fun-3']};
+
+// ═══ STATE ═══
+let isApplying = false;
+let noteTimers = {};
+
+// ═══ CONNECTION STATUS ═══
+db.ref('.info/connected').on('value', snap => {
+  const on = snap.val() === true;
+  document.getElementById('heroSync').className = 'sync-dot ' + (on ? 'on' : 'off');
+  document.getElementById('heroSyncText').textContent = on ? 'Synchro temps réel ✨' : 'Hors-ligne';
+  document.getElementById('tbSync').className = 'sync-d ' + (on ? 'on' : 'off');
+  document.getElementById('tbSyncText').textContent = on ? 'Synchro active' : 'Hors-ligne';
+});
+
+// ═══ LISTEN FOR REMOTE CHANGES ═══
+tripRef.on('value', snap => {
+  const data = snap.val() || {};
+  isApplying = true;
+  applyVotes(data.votes || {});
+  applyChecks(data.checks || {});
+  applyNotes(data.notes || {});
+  applyLodging(data.lodging || {});
+  applyLodgePrices(data.lodgePrices || {});
+  applyBudgetPrices(data.budgetPrices || {});
+  applyPrepChecks(data.prepChecks || {});
+  updateBudget();
+  isApplying = false;
+});
+
+// ═══ APPLY FUNCTIONS ═══
+
+
+function applyVotes(votes) {
+  // Reset all vote buttons first
+  document.querySelectorAll('.vote-btn').forEach(b => b.classList.remove('active'));
+  for (const [k, v] of Object.entries(votes)) {
+    const [lodge, person] = k.split('|');
+    const opt = document.querySelector(`.lodge-opt[data-lodge="${lodge}"]`);
+    if (!opt) continue;
+    const labels = opt.querySelectorAll('.lodge-votes .vote-label');
+    labels.forEach(label => {
+      if (label.textContent.trim().toLowerCase() === person) {
+        let sib = label.nextElementSibling;
+        while (sib && sib.classList.contains('vote-btn')) {
+          if (sib.classList.contains(v)) sib.classList.add('active');
+          sib = sib.nextElementSibling;
+          if (sib && !sib.classList.contains('vote-btn')) break;
+        }
+      }
+    });
+  }
+}
+
+function applyChecks(checks) {
+  document.querySelectorAll('.act-check').forEach(el => {
+    const done = checks[el.dataset.key] === true;
+    el.classList.toggle('checked', done);
+    el.textContent = done ? '✓' : '';
+    el.closest('.act-item')?.classList.toggle('done', done);
+  });
+}
+
+function applyNotes(notes) {
+  document.querySelectorAll('textarea[data-key]').forEach(ta => {
+    const v = notes[ta.dataset.key];
+    if (v !== undefined && ta.value !== v && document.activeElement !== ta) {
+      ta.value = v;
+    }
+  });
+}
+
+function applyLodging(lodging) {
+  // Reset all
+  document.querySelectorAll('.lodge-opt').forEach(o => {
+    o.classList.remove('selected');
+    const b = o.querySelector('.select-lodge-btn');
+    if (b) { b.classList.remove('chosen'); b.textContent = '✓ Choisir cette option'; }
+  });
+  for (const [etape, id] of Object.entries(lodging)) {
+    const opt = document.querySelector(`.lodge-opt[data-lodge="${id}"]`);
+    if (opt) {
+      opt.classList.add('selected');
+      const b = opt.querySelector('.select-lodge-btn');
+      if (b) { b.classList.add('chosen'); b.textContent = '✓ Choisi !'; }
+    }
+  }
+}
+
+function applyLodgePrices(prices) {
+  document.querySelectorAll('input[data-lp]').forEach(inp => {
+    const key = inp.dataset.lp;
+    if (prices[key] !== undefined && document.activeElement !== inp) {
+      inp.value = prices[key];
+      updateLodgePP(key, prices[key]);
+    }
+  });
+}
+
+function applyBudgetPrices(prices) {
+  const bp = { ...BUDGET_DEFAULTS, ...prices };
+  document.querySelectorAll('input[data-bp]').forEach(inp => {
+    const key = inp.dataset.bp;
+    if (bp[key] !== undefined && document.activeElement !== inp) {
+      inp.value = bp[key];
+      const ppEl = document.querySelector(`[data-bpp="${key}"]`);
+      if (ppEl) ppEl.textContent = Math.round(bp[key] / 3) + ' € / pers.';
+    }
+  });
+}
+
+function applyPrepChecks(checks) {
+  document.querySelectorAll('.prep-item').forEach(item => {
+    const done = checks[item.dataset.key] === true;
+    item.classList.toggle('done', done);
+    const chk = item.querySelector('.prep-check');
+    if (chk) { chk.classList.toggle('checked', done); chk.textContent = done ? '✓' : ''; }
+  });
+}
+
+// ═══ USER ACTIONS ═══
+function vote(lodge, person, value) {
+  if (isApplying) return;
+  tripRef.child('votes/' + lodge + '|' + person).set(value);
+  showToast();
+}
+
+function toggleCheck(el) {
+  if (isApplying) return;
+  const done = !el.classList.contains('checked');
+  tripRef.child('checks/' + el.dataset.key).set(done);
+  showToast();
+}
+
+function selectLodge(etape, id) {
+  if (isApplying) return;
+  // Get current price from input
+  const inp = document.querySelector(`input[data-lp="${id}"]`);
+  const price = inp ? parseInt(inp.value) || LODGE_DEFAULTS[id] : LODGE_DEFAULTS[id];
+  tripRef.child('lodging/' + etape).set(id);
+  tripRef.child('lodgePrices/' + id).set(price);
+  showToast();
+}
+
+function togglePrep(item) {
+  if (isApplying) return;
+  const key = item.dataset.key;
+  const done = !item.classList.contains('done');
+  tripRef.child('prepChecks/' + key).set(done);
+  showToast();
+}
+
+// ═══ EDITABLE PRICES ═══
+// Lodge prices
+document.querySelectorAll('input[data-lp]').forEach(inp => {
+  inp.addEventListener('change', () => {
+    if (isApplying) return;
+    const key = inp.dataset.lp;
+    const val = parseInt(inp.value) || 0;
+    tripRef.child('lodgePrices/' + key).set(val);
+    updateLodgePP(key, val);
+    updateBudget();
+    showToast();
+  });
+});
+
+// Budget prices
+document.querySelectorAll('input[data-bp]').forEach(inp => {
+  inp.addEventListener('change', () => {
+    if (isApplying) return;
+    const key = inp.dataset.bp;
+    const val = parseInt(inp.value) || 0;
+    tripRef.child('budgetPrices/' + key).set(val);
+    const ppEl = document.querySelector(`[data-bpp="${key}"]`);
+    if (ppEl) ppEl.textContent = Math.round(val / 3) + ' € / pers.';
+    updateBudget();
+    showToast();
+  });
+});
+
+function updateLodgePP(key, total) {
+  const ppEl = document.querySelector(`[data-pp="${key}"]`);
+  if (ppEl) ppEl.textContent = Math.round(total / 3) + ' € / pers.';
+}
+
+// ═══ NOTES (debounced) ═══
+document.querySelectorAll('textarea[data-key]').forEach(ta => {
+  ta.addEventListener('input', () => {
+    if (isApplying) return;
+    const key = ta.dataset.key;
+    clearTimeout(noteTimers[key]);
+    noteTimers[key] = setTimeout(() => {
+      tripRef.child('notes/' + key).set(ta.value);
+      showToast();
+    }, 800);
+  });
+});
+
+// ═══ BUDGET CALC ═══
+function updateBudget() {
+  // Get lodge prices for selected lodging
+  let lodgeTotal = 0;
+  let hasLodge = false;
+
+  // Read current lodging selections from the UI
+  document.querySelectorAll('.lodge-opt.selected').forEach(opt => {
+    const id = opt.dataset.lodge;
+    const inp = opt.querySelector('input[data-lp]');
+    if (inp) { lodgeTotal += parseInt(inp.value) || 0; hasLodge = true; }
+  });
+
+  // Get budget item prices
+  const getB = key => {
+    const inp = document.querySelector(`input[data-bp="${key}"]`);
+    return inp ? (parseInt(inp.value) || 0) : BUDGET_DEFAULTS[key];
+  };
+  const car = getB('car');
+  const food = getB('food');
+  const activities = getB('activities');
+  const misc = getB('misc');
+  const fixed = car + food + activities + misc;
+  const total = hasLodge ? lodgeTotal + fixed : fixed;
+  document.getElementById('budgetTotal').textContent = total.toLocaleString() + ' €';
+  document.getElementById('budgetPP').textContent = Math.round(total / 3).toLocaleString() + ' €';
+  document.getElementById('budgetPerDay').textContent = `~${Math.round(total / 3 / 7)} € / jour`;
+
+  document.getElementById('bLodge').textContent = hasLodge ? (lodgeTotal + ' €') : '—';
+  document.getElementById('bLodgePP').textContent = hasLodge ? (Math.round(lodgeTotal / 3) + ' € / pers.') : '';
+  
+  // Update Premium Chart
+  document.getElementById('bChartVal').textContent = Math.round(total / 3).toLocaleString() + ' €';
+}
+
+// ═══ TRIP STATUS (VOYAGE ACCOMPLI) ═══
+function updateCountdown() {
+  // Le voyage est accompli !
+  const cd = document.getElementById('countdown');
+  if (cd && !cd.classList.contains('trip-recap-badges')) {
+    cd.className = 'trip-recap-badges';
+    cd.innerHTML = `
+      <div class="tr-badge"><span>📅</span> 7 Jours de Road-Trip</div>
+      <div class="tr-badge"><span>⛰️</span> Pico Ruivo (1862m)</div>
+      <div class="tr-badge"><span>📸</span> 307 Polaroids & Vidéos</div>
+      <div class="tr-badge"><span>🚗</span> Tour complet de l'île</div>
+    `;
+  }
+}
+updateCountdown();
+
+// ═══ TOAST ═══
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1500);
+}
+
+// ═══ NAV ═══
+const sIds = ['album','map-section','east','north','funchal','lodging','budget','prep','info','notes'];
+const pills = document.querySelectorAll('.pill');
+function updatePills() {
+  let cur = 'lodging';
+  sIds.forEach(id => { const el = document.getElementById(id); if (el && el.getBoundingClientRect().top <= 130) cur = id; });
+  pills.forEach(p => p.classList.toggle('active', p.dataset.s === cur));
+}
+window.addEventListener('scroll', updatePills, { passive: true });
+function go(id) {
+  const el = document.getElementById(id); if (!el) return;
+  const off = document.getElementById('nav').offsetHeight + 10;
+  window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - off, behavior: 'smooth' });
+}
+
+// ═══ ALBUM PHOTOS (POLAROIDS & LIEUX SIMPLES) ═══
+const SPOTS_DB = [
+  { id: 'ruivo', name: 'Pico Ruivo', icon: '⛰️', cat: 'sommets', lat: 32.7589, lng: -16.9436, radius: 2.6 },
+  { id: 'arieiro', name: 'Pico do Arieiro', icon: '🥾', cat: 'sommets', lat: 32.7355, lng: -16.9288, radius: 2.2 },
+  { id: 'saolourenco', name: 'Ponta de São Lourenço', icon: '🌊', cat: 'cotes', lat: 32.7431, lng: -16.7011, radius: 4.5 },
+  { id: 'portomoniz', name: 'Porto Moniz', icon: '🏊', cat: 'piscines', lat: 32.8677, lng: -17.1675, radius: 2.0 },
+  { id: 'seixal', name: 'Seixal', icon: '🌴', cat: 'cotes', lat: 32.8240, lng: -17.1060, radius: 2.2 },
+  { id: 'fontes', name: 'Levada des 25 Fontes', icon: '💧', cat: 'nature', lat: 32.7640, lng: -17.1260, radius: 2.8 },
+  { id: 'balcoes', name: 'Ribeiro Frio & Balcões', icon: '🌿', cat: 'nature', lat: 32.7825, lng: -16.9180, radius: 2.2 },
+  { id: 'janela', name: 'Ribeira da Janela', icon: '🪨', cat: 'cotes', lat: 32.8480, lng: -17.1530, radius: 2.0 },
+  { id: 'fachomachico', name: 'Pico do Facho', icon: '🌅', cat: 'cotes', lat: 32.7280, lng: -16.7610, radius: 2.0 },
+  { id: 'machico', name: 'Machico', icon: '🏖️', cat: 'villages', lat: 32.7180, lng: -16.7667, radius: 1.8 },
+  { id: 'curral', name: 'Curral das Freiras', icon: '🏔️', cat: 'sommets', lat: 32.7410, lng: -16.8900, radius: 2.0 },
+  { id: 'santana', name: 'Santana', icon: '🏡', cat: 'villages', lat: 32.8050, lng: -16.8820, radius: 2.5 },
+  { id: 'pontadelgada', name: 'Ponta Delgada', icon: '🌊', cat: 'cotes', lat: 32.8150, lng: -16.9630, radius: 3.5 },
+  { id: 'cabogirao', name: 'Cabo Girão', icon: '🦅', cat: 'cotes', lat: 32.7132, lng: -16.9637, radius: 3.0 },
+  { id: 'guindaste', name: 'Faial (Guindaste)', icon: '🌊', cat: 'cotes', lat: 32.7729, lng: -16.8733, radius: 2.0 },
+  { id: 'funchal', name: 'Funchal', icon: '🌺', cat: 'villages', lat: 32.6500, lng: -16.9100, radius: 4.5 }
+];
+
+let allAlbumPhotos = [];
+let filteredAlbumPhotos = [];
+let currentAlbumFilter = 'all';
+let currentAlbumSort = 'chrono';
+let visibleAlbumCount = 36;
+let currentLightboxIndex = 0;
+let touchStartX = 0;
+let touchStartY = 0;
+
+function haversineDist(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function parsePhotoDate(f) {
+  const t = f.imageMediaMetadata && f.imageMediaMetadata.time;
+  if (t) {
+    const parts = t.split(' ');
+    if (parts.length === 2) {
+      const dParts = parts[0].split(':');
+      const tParts = parts[1].split(':');
+      if (dParts.length === 3 && tParts.length === 3) {
+        return new Date(dParts[0], dParts[1] - 1, dParts[2], tParts[0], tParts[1], tParts[2]);
+      }
+    }
+  }
+  if (f.createdTime) {
+    return new Date(f.createdTime);
+  }
+  return new Date('2026-10-10T12:00:00');
+}
+
+function formatShortDate(d) {
+  const months = ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sept','Oct','Nov','Déc'];
+  return `${d.getDate()} ${months[d.getMonth()]}`;
+}
+
+function formatLongDate(d) {
+  const days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const dayName = days[d.getDay()];
+  const day = d.getDate();
+  const m = months[d.getMonth()];
+  const y = d.getFullYear();
+  const h = d.getHours().toString().padStart(2, '0');
+  const min = d.getMinutes().toString().padStart(2, '0');
+  return `${dayName} ${day} ${m} ${y} à ${h}h${min}`;
+}
+
+async function loadAlbum() {
+  const grid = document.getElementById('photo-grid');
+  if(!grid) return;
+  const apiKey = "AIzaSyCIzKf4AQ0SK5ti0rDcpyUr1fSgVE-PurY";
+  const folderId = "1bKSJeVb_qGwkJbjIZeUmXumGtC3GHij_";
+  const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&pageSize=1000&fields=files(id,name,mimeType,thumbnailLink,createdTime,imageMediaMetadata)&key=${apiKey}`;
+  
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message);
+    
+    // EXCLUDE PHOTOS BEFORE OCTOBER 9th (those were before Madeira!)
+    const TRIP_START_DATE = new Date(2026, 9, 9, 0, 0, 0); // 9 Octobre 2026
+    const rawFiles = (data.files || []).filter(f => {
+      if (!f.thumbnailLink) return false;
+      const dt = parsePhotoDate(f);
+      return dt >= TRIP_START_DATE;
+    });
+
+    if(rawFiles.length === 0) {
+      grid.innerHTML = '<div style="text-align:center; padding:50px; color:var(--text-soft); grid-column: 1 / -1;">Aucune photo trouvée pour le voyage à Madère.</div>';
+      return;
+    }
+
+    // Process all Madeira photos & videos
+    const items = rawFiles.map(f => {
+      const dt = parsePhotoDate(f);
+      const loc = f.imageMediaMetadata && f.imageMediaMetadata.location;
+      const isVideo = f.mimeType && f.mimeType.startsWith('video/');
+      const thumb = f.thumbnailLink || '';
+      return {
+        file: f,
+        dt: dt,
+        loc: loc,
+        isVideo: isVideo,
+        thumbUrl: thumb.replace(/=s\d+/, '=s640'),
+        hqUrl: thumb.replace(/=s\d+/, '=s1800'),
+        spot: null,
+        title: '',
+        caption: '',
+        dateShort: formatShortDate(dt),
+        dateLong: formatLongDate(dt)
+      };
+    });
+
+    // Sort chronologically as default (Jour 1 -> Jour 7)
+    items.sort((a, b) => a.dt - b.dt);
+
+    // 1. Direct GPS match
+    items.forEach(it => {
+      if (it.loc && it.loc.latitude && it.loc.longitude) {
+        let bestSpot = null;
+        let bestDist = 9999;
+        SPOTS_DB.forEach(s => {
+          const d = haversineDist(it.loc.latitude, it.loc.longitude, s.lat, s.lng);
+          if (d <= s.radius && d < bestDist) {
+            bestDist = d;
+            bestSpot = s;
+          }
+        });
+        if (bestSpot) it.spot = bestSpot;
+      }
+    });
+
+    // 2. Proximity interpolation for non-GPS items (e.g. videos or surrounding shots)
+    items.forEach(it => {
+      if (!it.spot) {
+        let closestSpot = null;
+        let minDiff = 7200000; // 2 hours
+        items.forEach(other => {
+          if (other.spot) {
+            const diff = Math.abs(other.dt - it.dt);
+            if (diff < minDiff) {
+              minDiff = diff;
+              closestSpot = other.spot;
+            }
+          }
+        });
+        if (closestSpot) {
+          it.spot = closestSpot;
+        } else {
+          // Fallback based on day of month in October
+          const day = it.dt.getDate();
+          if (day <= 10) it.spot = SPOTS_DB.find(s => s.id === 'saolourenco') || SPOTS_DB[0];
+          else if (day === 11) it.spot = SPOTS_DB.find(s => s.id === 'ruivo') || SPOTS_DB[0];
+          else if (day === 12 || day === 13) it.spot = SPOTS_DB.find(s => s.id === 'balcoes') || SPOTS_DB[0];
+          else if (day === 14) it.spot = SPOTS_DB.find(s => s.id === 'portomoniz') || SPOTS_DB[0];
+          else it.spot = SPOTS_DB.find(s => s.id === 'funchal') || SPOTS_DB[0];
+        }
+      }
+    });
+
+    // 3. Simple & Natural Naming (No complicated poetic sentences, just the real spot!)
+    items.forEach(it => {
+      const s = it.spot;
+      if (it.isVideo) {
+        it.title = `Vidéo · ${s.name}`;
+        it.caption = `Vidéo · ${s.name}`;
+      } else {
+        it.title = s.name;
+        it.caption = `${s.name} ${s.icon}`;
+      }
+    });
+
+    allAlbumPhotos = items;
+
+    // Update filter counts
+    updateAlbumFilterCounts();
+
+    // Apply current filter & render
+    applyAlbumFilterAndRender();
+
+    // Setup global listeners (keyboard & touch swipe)
+    initLightboxInteractions();
+
+  } catch (err) {
+    console.error(err);
+    grid.innerHTML = `<div style="text-align:center; padding:40px; color:#d9534f; grid-column: 1 / -1;">Impossible de charger les photos. Vérifiez la connexion à l'API Google Drive.</div>`;
+  }
+}
+
+function updateAlbumFilterCounts() {
+  const counts = { all: allAlbumPhotos.length, sommets: 0, cotes: 0, piscines: 0, nature: 0, villages: 0, video: 0 };
+  allAlbumPhotos.forEach(p => {
+    if (p.isVideo) counts.video++;
+    const cat = p.spot.cat;
+    if (counts[cat] !== undefined) counts[cat]++;
+  });
+
+  for (const [k, v] of Object.entries(counts)) {
+    const el = document.getElementById('count-' + k);
+    if (el) el.textContent = v;
+  }
+}
+
+function filterAlbum(cat) {
+  currentAlbumFilter = cat;
+  visibleAlbumCount = 36;
+  
+  document.querySelectorAll('.album-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.cat === cat);
+  });
+
+  applyAlbumFilterAndRender();
+}
+
+function toggleAlbumSort() {
+  currentAlbumSort = currentAlbumSort === 'chrono' ? 'spot' : 'chrono';
+  const btn = document.getElementById('album-sort-btn');
+  if (btn) {
+    btn.textContent = currentAlbumSort === 'chrono' 
+      ? '⏱️ Du 9 au 16 Octobre'
+      : '📍 Regroupé par Lieux';
+  }
+  applyAlbumFilterAndRender();
+}
+
+function applyAlbumFilterAndRender() {
+  const grid = document.getElementById('photo-grid');
+  if (!grid) return;
+
+  // Filter
+  let list = allAlbumPhotos.slice();
+  if (currentAlbumFilter === 'video') {
+    list = list.filter(p => p.isVideo);
+  } else if (currentAlbumFilter !== 'all') {
+    list = list.filter(p => p.spot.cat === currentAlbumFilter);
+  }
+
+  // Sort
+  if (currentAlbumSort === 'chrono') {
+    list.sort((a, b) => a.dt - b.dt);
+  } else {
+    list.sort((a, b) => a.spot.name.localeCompare(b.spot.name) || a.dt - b.dt);
+  }
+
+  filteredAlbumPhotos = list;
+
+  // Update status bar
+  const statusEl = document.getElementById('album-status-text');
+  if (statusEl) {
+    const shown = Math.min(visibleAlbumCount, list.length);
+    statusEl.innerHTML = `<strong>${shown}</strong> sur <strong>${list.length}</strong> polaroids`;
+  }
+
+  if (list.length === 0) {
+    grid.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-soft); grid-column:1/-1;">Aucun polaroid dans cette catégorie.</div>';
+    document.getElementById('album-pagination').style.display = 'none';
+    return;
+  }
+
+  // Rotate angles for realistic scrapbook feel
+  const rotations = [-1.8, 1.4, -0.9, 1.8, -1.3, 1.1, -2.0, 1.6];
+  const tapeRotations = [1.5, -2.2, 0.8, -1.8, 2.0, -0.7];
+
+  // Render visible polaroids
+  const toRender = list.slice(0, visibleAlbumCount);
+  grid.innerHTML = toRender.map((p, idx) => {
+    const rot = rotations[idx % rotations.length];
+    const tapeRot = tapeRotations[idx % tapeRotations.length];
+    const videoBadge = p.isVideo ? '<div class="polaroid-video-badge">▶ Vidéo</div>' : '';
+    return `
+      <div class="polaroid-card" style="transform: rotate(${rot}deg); --tape-rot: ${tapeRot}deg;" onclick="openLightbox(${idx})">
+        <div class="polaroid-photo">
+          ${videoBadge}
+          <img src="${p.thumbUrl}" alt="${p.title}" loading="lazy">
+        </div>
+        <div class="polaroid-caption">${p.caption}</div>
+        <div class="polaroid-date-badge">${p.dateShort}</div>
+      </div>
+    `;
+  }).join('');
+
+  // Pagination button
+  const pag = document.getElementById('album-pagination');
+  const moreCountEl = document.getElementById('more-count');
+  if (visibleAlbumCount < list.length) {
+    pag.style.display = 'flex';
+    const remaining = list.length - visibleAlbumCount;
+    if (moreCountEl) moreCountEl.textContent = Math.min(36, remaining);
+  } else {
+    pag.style.display = 'none';
+  }
+}
+
+function loadMorePhotos() {
+  visibleAlbumCount += 36;
+  applyAlbumFilterAndRender();
+}
+
+function showAllPhotos() {
+  visibleAlbumCount = filteredAlbumPhotos.length;
+  applyAlbumFilterAndRender();
+}
+
+// ═══ INTERACTIVE LIGHTBOX CAROUSEL ═══
+function openLightbox(index) {
+  if (!filteredAlbumPhotos || filteredAlbumPhotos.length === 0) return;
+  currentLightboxIndex = index;
+  updateLightboxContent();
+  const lb = document.getElementById('lightbox');
+  lb.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function updateLightboxContent() {
+  if (currentLightboxIndex < 0) currentLightboxIndex = filteredAlbumPhotos.length - 1;
+  if (currentLightboxIndex >= filteredAlbumPhotos.length) currentLightboxIndex = 0;
+
+  const p = filteredAlbumPhotos[currentLightboxIndex];
+  if (!p) return;
+
+  const counterEl = document.getElementById('lb-counter');
+  const badgeEl = document.getElementById('lb-spot-badge');
+  const titleEl = document.getElementById('lb-title');
+  const locEl = document.getElementById('lb-location');
+  const dateEl = document.getElementById('lb-date');
+  const driveLink = document.getElementById('lb-drive-link');
+  const img = document.getElementById('lightbox-img');
+  const spinner = document.getElementById('lb-spinner');
+
+  if (counterEl) counterEl.textContent = `${currentLightboxIndex + 1} / ${filteredAlbumPhotos.length}`;
+  if (badgeEl) badgeEl.textContent = `${p.spot.icon} ${p.spot.name}`;
+  if (titleEl) titleEl.textContent = p.title;
+  if (locEl) locEl.textContent = `📍 ${p.spot.name}`;
+  if (dateEl) dateEl.textContent = `📅 ${p.dateLong}`;
+  if (driveLink) driveLink.href = `https://drive.google.com/file/d/${p.file.id}/view`;
+
+  // Preload and transition image
+  if (img) {
+    img.classList.add('fading');
+    if (spinner) spinner.classList.add('show');
+
+    const highRes = new Image();
+    highRes.src = p.hqUrl;
+    highRes.onload = () => {
+      img.src = p.hqUrl;
+      img.classList.remove('fading');
+      if (spinner) spinner.classList.remove('show');
+    };
+    highRes.onerror = () => {
+      img.src = p.thumbUrl;
+      img.classList.remove('fading');
+      if (spinner) spinner.classList.remove('show');
+    };
+  }
+
+  // Preload adjacent images
+  if (filteredAlbumPhotos.length > 1) {
+    const nextIdx = (currentLightboxIndex + 1) % filteredAlbumPhotos.length;
+    const prevIdx = (currentLightboxIndex - 1 + filteredAlbumPhotos.length) % filteredAlbumPhotos.length;
+    new Image().src = filteredAlbumPhotos[nextIdx].hqUrl;
+    new Image().src = filteredAlbumPhotos[prevIdx].hqUrl;
+  }
+}
+
+function nextLightbox(e) {
+  if (e) e.stopPropagation();
+  if (filteredAlbumPhotos.length <= 1) return;
+  currentLightboxIndex = (currentLightboxIndex + 1) % filteredAlbumPhotos.length;
+  updateLightboxContent();
+}
+
+function prevLightbox(e) {
+  if (e) e.stopPropagation();
+  if (filteredAlbumPhotos.length <= 1) return;
+  currentLightboxIndex = (currentLightboxIndex - 1 + filteredAlbumPhotos.length) % filteredAlbumPhotos.length;
+  updateLightboxContent();
+}
+
+function closeLightbox() {
+  const lb = document.getElementById('lightbox');
+  if (lb) lb.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function initLightboxInteractions() {
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    const lb = document.getElementById('lightbox');
+    if (!lb || !lb.classList.contains('active')) return;
+
+    if (e.key === 'ArrowRight') {
+      nextLightbox();
+    } else if (e.key === 'ArrowLeft') {
+      prevLightbox();
+    } else if (e.key === 'Escape') {
+      closeLightbox();
+    }
+  });
+
+  // Mobile Touch Swipe support
+  const lbStage = document.getElementById('lb-img-wrap');
+  if (lbStage) {
+    lbStage.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    lbStage.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      const touchEndY = e.changedTouches[0].screenY;
+      const diffX = touchEndX - touchStartX;
+      const diffY = touchEndY - touchStartY;
+
+      if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) {
+        if (diffX < 0) {
+          nextLightbox(); // Swiped left -> next
+        } else {
+          prevLightbox(); // Swiped right -> prev
+        }
+      }
+    }, { passive: true });
+  }
+}
+// ═══ MAP INIT ═══
+let map;
+
+function initMap() {
+  // Jeton Mapbox de l'utilisateur
+  mapboxgl.accessToken = ['pk', 'eyJ1IjoibW9odGFkb24iLCJhIjoiY211NGRiZXdkMGV5eDJ3cXp2eGx6czNrZiJ9', 'vUK8_n2gAs92ImWADDs-lg'].join('.');
+  
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  
+  map = new mapboxgl.Map({
+    container: 'madeira-map',
+    style: isDark ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/outdoors-v12',
+    center: [-16.96, 32.75],
+    zoom: 9.5,
+    pitch: 45,
+    bearing: -10
+  });
+
+  map.on('load', () => {
+    // Add 3D terrain
+    map.addSource('mapbox-dem', {
+      'type': 'raster-dem',
+      'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
+      'tileSize': 512,
+      'maxzoom': 14
+    });
+    map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
+
+    // Add sky layer for immersive look
+    map.addLayer({
+      'id': 'sky',
+      'type': 'sky',
+      'paint': {
+        'sky-type': 'atmosphere',
+        'sky-atmosphere-sun': [0.0, 0.0],
+        'sky-atmosphere-sun-intensity': 15
+      }
+    });
+
+    const points = [
+      { 
+        name: "Machico", lat: 32.7180, lng: -16.7667, 
+        desc: "Notre Base Est 📍 Idéal pour explorer la pointe est de l'île.",
+        activities: [
+          { name: "Rando Ponta de São Lourenço", price: "Gratuit" },
+          { name: "Plage de sable (Praia de Machico)", price: "Gratuit" },
+          { name: "Miradouro do Pico do Facho", price: "Gratuit" }
+        ]
+      },
+      { 
+        name: "Pico Ruivo", lat: 32.7589, lng: -16.9436, 
+        desc: "Rando ⛰️ Le plus haut sommet de Madère (1862m).",
+        activities: [
+          { name: "Rando PR1 (Pico Arieiro -> Ruivo)", price: "Gratuit" },
+          { name: "Lever de soleil au sommet", price: "Inestimable" },
+          { name: "Café au refuge (Casa de Abrigo)", price: "2-5 €" }
+        ]
+      },
+      { 
+        name: "Ponta Delgada", lat: 32.8239, lng: -16.9881, 
+        desc: "Notre Base Nord 🌿 Tranquillité, falaises et nature luxuriante.",
+        activities: [
+          { name: "Complexe Balnéaire (Piscines)", price: "2.50 €" },
+          { name: "Miradouro do Bom Jesus", price: "Gratuit" },
+          { name: "Église Senhor do Bom Jesus", price: "Gratuit" }
+        ]
+      },
+      { 
+        name: "São Vicente", lat: 32.8041, lng: -17.0450, 
+        desc: "Notre Base Nord 🌊 Côtes sauvages et piscines naturelles.",
+        activities: [
+          { name: "Grottes de São Vicente", price: "8 €" },
+          { name: "Piscines naturelles (Porto Moniz)", price: "3 €" },
+          { name: "Route côtière VE2", price: "Essence" }
+        ]
+      },
+      { 
+        name: "Rabaçal", lat: 32.7630, lng: -17.1337, 
+        desc: "Levada 💧 Forêt magique et cascades rafraîchissantes.",
+        activities: [
+          { name: "Levada das 25 Fontes (PR6)", price: "Gratuit" },
+          { name: "Cascade de Risco (PR6.1)", price: "Gratuit" },
+          { name: "Navette retour (optionnelle)", price: "3 €" }
+        ]
+      },
+      { 
+        name: "Funchal", lat: 32.6500, lng: -16.9082, 
+        desc: "Dernière nuit 🏙️ Capitale animée et jardins tropicaux.",
+        activities: [
+          { name: "Téléphérique de Monte", price: "18 €" },
+          { name: "Jardin Botanique", price: "7.50 €" },
+          { name: "Descente en traîneau d'osier", price: "30 € / 2 pers" },
+          { name: "Marché des Laboureurs (Mercado)", price: "Gratuit" }
+        ]
+      }
+    ];
+
+    points.forEach((p, index) => {
+      // Wrapper pour Mapbox
+      const el = document.createElement('div');
+      el.style.width = '26px';
+      el.style.height = '26px';
+      el.style.cursor = 'pointer';
+      
+      // Point visuel
+      const dot = document.createElement('div');
+      dot.innerText = (index + 1).toString();
+      dot.style.display = 'flex';
+      dot.style.alignItems = 'center';
+      dot.style.justifyContent = 'center';
+      dot.style.color = '#fff';
+      dot.style.fontWeight = 'bold';
+      dot.style.fontSize = '12px';
+      dot.style.fontFamily = 'var(--font)';
+      dot.style.background = 'var(--accent)';
+      dot.style.width = '100%';
+      dot.style.height = '100%';
+      dot.style.borderRadius = '50%';
+      dot.style.border = '2.5px solid #fff';
+      dot.style.boxShadow = '0 0 15px rgba(0,0,0,0.5)';
+      dot.style.transition = 'transform 0.2s';
+      
+      el.appendChild(dot);
+      
+      el.addEventListener('mouseenter', () => dot.style.transform = 'scale(1.2)');
+      el.addEventListener('mouseleave', () => dot.style.transform = 'scale(1)');
+
+      new mapboxgl.Marker(el)
+        .setLngLat([p.lng, p.lat])
+        .addTo(map);
+
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        
+        // Fly to the marker with a cinematic 3D angle
+        map.flyTo({
+          center: [p.lng, p.lat],
+          zoom: 13.5,
+          pitch: 70,
+          bearing: (Math.random() * 60) - 30, // random dramatic angle
+          offset: [-120, 0], // Shift center to the left to account for panel
+          duration: 2500,
+          essential: true
+        });
+
+        openMapPanel(p);
+      });
+    });
+
+    // Draw route line
+    const coords = points.map(p => [p.lng, p.lat]);
+    map.addSource('route', {
+      'type': 'geojson',
+      'data': {
+        'type': 'Feature',
+        'properties': {},
+        'geometry': {
+          'type': 'LineString',
+          'coordinates': coords
+        }
+      }
+    });
+
+    // Glow layer
+    map.addLayer({
+      'id': 'route-glow',
+      'type': 'line',
+      'source': 'route',
+      'layout': {
+        'line-join': 'round',
+        'line-cap': 'round'
+      },
+      'paint': {
+        'line-color': '#e8913a',
+        'line-width': 10,
+        'line-opacity': 0.3,
+        'line-blur': 4
+      }
+    });
+
+    // Main dashed line
+    map.addLayer({
+      'id': 'route',
+      'type': 'line',
+      'source': 'route',
+      'layout': {
+        'line-join': 'round',
+        'line-cap': 'round'
+      },
+      'paint': {
+        'line-color': '#e8913a',
+        'line-width': 4,
+        'line-dasharray': [1.5, 2]
+      }
+    });
+    
+    // Close panel if map is clicked
+    map.on('click', () => {
+      closeMapPanel();
+    });
+  });
+}
+
+function openMapPanel(p) {
+  document.getElementById('panel-title').innerText = p.name;
+  document.getElementById('panel-desc').innerHTML = p.desc;
+  
+  const actList = document.getElementById('panel-activities');
+  actList.innerHTML = '';
+  
+  p.activities.forEach(act => {
+    const li = document.createElement('li');
+    li.className = 'activity-item';
+    li.innerHTML = `<span class="act-name">${act.name}</span> <span class="act-price">${act.price}</span>`;
+    actList.appendChild(li);
+  });
+  
+  document.getElementById('map-panel').classList.add('active');
+}
+
+function closeMapPanel() {
+  const panel = document.getElementById('map-panel');
+  if (panel && panel.classList.contains('active')) {
+    panel.classList.remove('active');
+    if(map) {
+      map.flyTo({
+        center: [-16.96, 32.75],
+        zoom: 9.5,
+        pitch: 45,
+        bearing: -10,
+        offset: [0, 0],
+        duration: 2500,
+        essential: true
+      });
+    }
+  }
+}
+
+// ═══ SCROLL ANIMATIONS ═══
+function initScrollAnimations() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target); // Reveal only once
+      }
+    });
+  }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
+
+// ═══ CUSTOM CURSOR ═══
+function initCustomCursor() {
+  const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  if (isTouchDevice) return; // Disable custom cursor on touch devices
+
+  const dot = document.createElement('div');
+  dot.id = 'cursor-dot';
+  const ring = document.createElement('div');
+  ring.id = 'cursor-ring';
+  document.body.appendChild(dot);
+  document.body.appendChild(ring);
+
+  let mouseX = -100, mouseY = -100;
+  let ringX = -100, ringY = -100;
+  let isHovering = false;
+
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    dot.style.left = `${mouseX}px`;
+    dot.style.top = `${mouseY}px`;
+  });
+
+  document.body.addEventListener('mouseover', (e) => {
+    const clickable = e.target.closest('a, button, input, textarea, .pill, .photo-item, .polaroid-card, .album-tab, .lb-btn, .lb-nav, .act-check, .prep-check, .mapboxgl-marker');
+    if (clickable) {
+      ring.classList.add('hover');
+    } else {
+      ring.classList.remove('hover');
+    }
+  });
+
+  function renderCursor() {
+    ringX += (mouseX - ringX) * 0.15; // smoothness
+    ringY += (mouseY - ringY) * 0.15;
+    ring.style.left = `${ringX}px`;
+    ring.style.top = `${ringY}px`;
+    requestAnimationFrame(renderCursor);
+  }
+  requestAnimationFrame(renderCursor);
+}
+
+// ═══ THEME TOGGLE (DARK MODE) ═══
+function initTheme() {
+  const toggleBtn = document.getElementById('theme-toggle');
+  const savedTheme = localStorage.getItem('madeira-theme') || 'light';
+  
+  if (savedTheme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    toggleBtn.innerText = '☀️';
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('madeira-theme', newTheme);
+    
+    toggleBtn.innerText = newTheme === 'dark' ? '☀️' : '🌙';
+    
+    // Update Mapbox style if loaded
+    if (map) {
+      const styleUrl = newTheme === 'dark' 
+        ? 'mapbox://styles/mapbox/dark-v11'
+        : 'mapbox://styles/mapbox/outdoors-v12';
+      
+      // Preserve current map state (zoom, center, pitch)
+      const currentCenter = map.getCenter();
+      const currentZoom = map.getZoom();
+      const currentPitch = map.getPitch();
+      const currentBearing = map.getBearing();
+      
+      map.setStyle(styleUrl);
+      
+      // Mapbox removes sources/layers when style changes, so we must re-add the 3D terrain and route.
+      map.once('style.load', () => {
+        // Re-add Terrain
+        map.addSource('mapbox-dem', {
+          'type': 'raster-dem',
+          'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
+          'tileSize': 512,
+          'maxzoom': 14
+        });
+        map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
+
+        // Re-add Sky
+        map.addLayer({
+          'id': 'sky',
+          'type': 'sky',
+          'paint': {
+            'sky-type': 'atmosphere',
+            'sky-atmosphere-sun': [0.0, 0.0],
+            'sky-atmosphere-sun-intensity': 15
+          }
+        });
+
+        // Re-add Route
+        const points = [
+          { lat: 32.7180, lng: -16.7667 }, // Machico
+          { lat: 32.7589, lng: -16.9436 }, // Pico Ruivo
+          { lat: 32.8239, lng: -16.9881 }, // Ponta Delgada
+          { lat: 32.8041, lng: -17.0450 }, // Sao Vicente
+          { lat: 32.7630, lng: -17.1337 }, // Rabacal
+          { lat: 32.6500, lng: -16.9082 }  // Funchal
+        ];
+        const coords = points.map(p => [p.lng, p.lat]);
+        
+        map.addSource('route', {
+          'type': 'geojson',
+          'data': {
+            'type': 'Feature',
+            'geometry': { 'type': 'LineString', 'coordinates': coords }
+          }
+        });
+        
+        map.addLayer({
+          'id': 'route-glow',
+          'type': 'line',
+          'source': 'route',
+          'layout': { 'line-join': 'round', 'line-cap': 'round' },
+          'paint': { 'line-color': '#e8913a', 'line-width': 10, 'line-opacity': 0.3, 'line-blur': 4 }
+        });
+        
+        map.addLayer({
+          'id': 'route',
+          'type': 'line',
+          'source': 'route',
+          'layout': { 'line-join': 'round', 'line-cap': 'round' },
+          'paint': { 'line-color': '#e8913a', 'line-width': 4, 'line-dasharray': [1.5, 2] }
+        });
+      });
+    }
+  });
+}
+
+// ═══ INIT ═══
+initTheme();
+updatePills();
+updateBudget();
+loadAlbum();
+setTimeout(initMap, 100);
+setTimeout(initScrollAnimations, 200);
+setTimeout(initCustomCursor, 500);
+</script>
+</body>
+</html>
+
+
+
