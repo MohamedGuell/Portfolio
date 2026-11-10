@@ -45,8 +45,7 @@ const projects: ProjectItem[] = [
     badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40",
     description: "Conception et programmation d'un robot autonome capable de détecter des briques colorées et de les déposer dans la zone dédiée. Pilotage de puissance par double pont en H (L298) et capteurs IR.",
     tech: ["BTS SN", "Capteurs Infrarouge", "Pont en H L298", "Automatisme"],
-    image: iterImg,
-    githubUrl: "https://github.com/MohamedGuell/Portfolio"
+    image: iterImg
   },
   {
     title: "Beps — Vitamines & Compléments",
@@ -78,8 +77,10 @@ export function Projets() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
         {projects.map((proj, idx) => {
           const primaryUrl = proj.demoUrl || proj.githubUrl;
+          const isClickable = Boolean(primaryUrl);
 
           const handleCardClick = (e: React.MouseEvent) => {
+            if (!isClickable) return;
             // Si le clic provient d'un bouton d'action intérieur, laisser le lien s'exécuter
             if ((e.target as HTMLElement).closest('a')) {
               return;
@@ -92,48 +93,63 @@ export function Projets() {
           return (
             <Tilt
               key={idx}
-              tiltMaxAngleX={8}
-              tiltMaxAngleY={8}
+              tiltMaxAngleX={isClickable ? 8 : 4}
+              tiltMaxAngleY={isClickable ? 8 : 4}
               perspective={1000}
-              scale={1.02}
+              scale={isClickable ? 1.02 : 1.0}
               transitionSpeed={1500}
               className="h-full"
             >
               <div
                 onClick={handleCardClick}
-                role="button"
-                tabIndex={0}
+                role={isClickable ? "button" : undefined}
+                tabIndex={isClickable ? 0 : undefined}
                 onKeyDown={(e) => {
+                  if (!isClickable) return;
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     if (primaryUrl) window.open(primaryUrl, '_blank', 'noopener,noreferrer');
                   }
                 }}
-                className="h-full flex flex-col bg-slate-900/90 backdrop-blur-md rounded-2xl overflow-hidden border border-slate-800 shadow-2xl hover:border-amber-400/60 transition-all duration-300 group cursor-pointer select-none"
+                className={`h-full flex flex-col bg-slate-900/90 backdrop-blur-md rounded-2xl overflow-hidden border border-slate-800 shadow-2xl transition-all duration-300 group select-none ${
+                  isClickable
+                    ? "hover:border-amber-400/60 cursor-pointer"
+                    : "cursor-default"
+                }`}
               >
                 {/* Image banner */}
                 <div className="relative h-48 w-full overflow-hidden bg-slate-950">
                   <img
                     src={proj.image}
                     alt={proj.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
+                    className={`w-full h-full object-cover transition-transform duration-500 ${
+                      isClickable
+                        ? "group-hover:scale-105 opacity-90 group-hover:opacity-100"
+                        : "opacity-85"
+                    }`}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
                   <span className={`absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-md border ${proj.badgeColor} backdrop-blur-md`}>
                     {proj.category}
                   </span>
-                  {/* Indication visuelle d'ouverture */}
-                  <span className="absolute top-3 right-3 text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-900/80 border border-white/10 text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 backdrop-blur-md">
-                    Ouvrir ↗
-                  </span>
+                  {/* Indication visuelle d'ouverture pour les cartes cliquables */}
+                  {isClickable && (
+                    <span className="absolute top-3 right-3 text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-900/80 border border-white/10 text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 backdrop-blur-md">
+                      Ouvrir ↗
+                    </span>
+                  )}
                 </div>
 
                 {/* Content */}
                 <div className="p-6 flex flex-col flex-grow justify-between gap-4">
                   <div>
-                    <h3 className="text-xl font-bold text-white group-hover:text-amber-400 transition-colors flex items-center justify-between">
+                    <h3 className={`text-xl font-bold text-white transition-colors flex items-center justify-between ${
+                      isClickable ? "group-hover:text-amber-400" : ""
+                    }`}>
                       <span>{proj.title}</span>
-                      <span className="text-amber-400 text-sm opacity-0 group-hover:opacity-100 transition-opacity ml-2">↗</span>
+                      {isClickable && (
+                        <span className="text-amber-400 text-sm opacity-0 group-hover:opacity-100 transition-opacity ml-2">↗</span>
+                      )}
                     </h3>
                     <p className="text-slate-300 text-sm mt-2 leading-relaxed">
                       {proj.description}
@@ -178,6 +194,12 @@ export function Projets() {
                         >
                           GitHub
                         </a>
+                      )}
+                      {!proj.demoUrl && !proj.githubUrl && (
+                        <div className="w-full text-center py-2.5 px-3 text-xs font-semibold rounded-lg bg-slate-800/50 text-slate-400 border border-slate-700/50 flex items-center justify-center gap-2">
+                          <span className="text-amber-400">🤖</span>
+                          <span>Système matériel physique • Validation BTS SN</span>
+                        </div>
                       )}
                     </div>
                   </div>
